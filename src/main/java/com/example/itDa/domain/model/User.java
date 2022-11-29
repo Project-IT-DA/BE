@@ -5,6 +5,7 @@ import org.springframework.data.annotation.CreatedDate;
 import javax.persistence.*;
 
 @Entity
+@Table(name="users")
 public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
