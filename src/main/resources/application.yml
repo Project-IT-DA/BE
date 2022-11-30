@@ -25,3 +25,6 @@ cloud:
       bucket: cheoljun
     stack:
       auto: false
+
+jwt:
+  secret-key: jwt_secret_!@#$%
