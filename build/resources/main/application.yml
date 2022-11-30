@@ -1,0 +1,30 @@
+spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  servlet:
+    multipart:
+      max-file-size: 30MB
+      max-request-size: 30MB
+  datasource:
+    username: admin
+    url: jdbc:mysql://springboot-db.cgc29q5lrmev.us-east-1.rds.amazonaws.com:3306/it-da
+    password: jcjc0422!
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+cloud:
+  aws:
+    credentials:
+      access-key: AKIARE5TNUV52RNJLY7R
+      secret-key: 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
+    region:
+      static: ap-northeast-2
+    s3:
+      bucket: cheoljun
+    stack:
+      auto: false
+
+jwt:
+  secret-key: jwt_secret_!@#$%

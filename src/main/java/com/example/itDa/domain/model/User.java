@@ -1,10 +1,19 @@
 package com.example.itDa.domain.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@Getter
 @Entity
+@Table(name="users")
 public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
@@ -23,9 +32,9 @@ public class User {
     private String password;
 
     @Column
-    private String profileImg;
-
-    @Column
     private int density;
+
+    @Enumerated(EnumType.STRING)
+    private LoginType loginType;
 
 }
