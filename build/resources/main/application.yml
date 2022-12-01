@@ -1,18 +1,26 @@
+
 spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
+  redis:
+    host: ec2-54-209-145-210.compute-1.amazonaws.com
+    port: 6379
   servlet:
     multipart:
       max-file-size: 30MB
       max-request-size: 30MB
   datasource:
     username: admin
-    url: jdbc:mysql://springboot-db.cgc29q5lrmev.us-east-1.rds.amazonaws.com:3306/it-da
+    url: jdbc:mysql://springboot-db.cgc29q5lrmev.us-east-1.rds.amazonaws.com:3306/develkit
     password: jcjc0422!
   jpa:
     hibernate:
       ddl-auto: update
+
+
+jwt:
+  secret-key: jwt_secret_!@#$%
 
 cloud:
   aws:
@@ -26,5 +34,3 @@ cloud:
     stack:
       auto: false
 
-jwt:
-  secret-key: jwt_secret_!@#$%
