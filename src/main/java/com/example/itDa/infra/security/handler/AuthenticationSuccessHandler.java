@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 //import com.hanghae.final_project.api.user.dto.response.LoginDto;
 import com.example.itDa.infra.security.UserDetailsImpl;
 import com.example.itDa.infra.security.jwt.JwtTokenUtils;
-import com.example.itDa.infra.global.dto.ResponseDto;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
