@@ -3,6 +3,7 @@ package com.example.itDa.domain.article;
 import com.example.itDa.domain.Category;
 import com.example.itDa.domain.Status;
 import com.example.itDa.domain.article.request.ArticleRequestDto;
+import com.example.itDa.domain.article.request.EditArticleRequestDto;
 import lombok.*;
 import org.springframework.stereotype.Service;
 
@@ -49,12 +50,21 @@ public class Article {
     @Enumerated(EnumType.STRING)
     private Category category;
 
-    public Article(ArticleRequestDto requestDto) {
-        this.articleName = requestDto.getArticleName();
-        this.substance = requestDto.getSubstance();
-        this.itemImg = requestDto.getItemImg();
-        this.location = requestDto.getLocation();
-        this.category = requestDto.getCategory();
-        this.sellPrice = requestDto.getSellPrice();
+//    public Article(ArticleRequestDto requestDto) {
+//        this.articleName = requestDto.getArticleName();
+//        this.substance = requestDto.getSubstance();
+//        this.itemImg = requestDto.getItemImg();
+//        this.location = requestDto.getLocation();
+//        this.category = requestDto.getCategory();
+//        this.sellPrice = requestDto.getSellPrice();
+//    }
+
+    public void update(EditArticleRequestDto editRequestDto) {
+        this.articleName = editRequestDto.getArticleName();
+        this.itemImg = editRequestDto.getItemImg();
+        this.substance = editRequestDto.getSubstance();
+        this.location = editRequestDto.getLocation();
+        this.category = editRequestDto.getCategory();
+        this.sellPrice = editRequestDto.getSellPrice();
     }
 }
