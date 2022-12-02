@@ -41,21 +41,18 @@ public class WebSecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
     private final HeaderTokenExtractor headerTokenExtractor;
     private final AuthenticationSuccessHandler authenticationSuccessHandler;
-
     private final AuthenticationFailureHandler authenticationFailureHandler;
-
     private final AccessDeniedHandler accessDeniedHandler;
-
     private final AuthorizationFailureHandler authorizationFailureHandler;
 
 
 
-    @Bean
+    @Bean // 패스워드 암호화
     public BCryptPasswordEncoder encodePassword() {
         return new BCryptPasswordEncoder();
     }
 
-    @Bean
+    @Bean // 시큐리티 제외된 리소스들
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web
                 .ignoring()
@@ -72,18 +69,22 @@ public class WebSecurityConfig {
 
     }
 
+    /*
+     http security: cross site request forgery 사이트간 요청 위조 공격
+
+     */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationManagerBuilder auth) throws Exception {
 
-        //인증 (Authentication)**: 사용자 신원을 확인하는 행위
-        //인가 (Authorization)**: 사용자 권한을 확인하는 행위
+        // 인증 (Authentication)**: 사용자 신원을 확인하는 행위
+        // 인가 (Authorization)**: 사용자 권한을 확인하는 행위
         auth
                 .authenticationProvider(jwtAuthorizationProvider)
                 .authenticationProvider(jwtAuthenticationProvider());
 
         http.csrf().disable();
+        http.formLogin().disable();
         http.cors().configurationSource(corsConfigurationSource());
-
 
 
         http
@@ -94,6 +95,7 @@ public class WebSecurityConfig {
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
+        // 경로 설정, 권한설정
         http
                 .authorizeRequests()
                 .anyRequest()
@@ -116,7 +118,7 @@ public class WebSecurityConfig {
     public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
 
         JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(authenticationManager(authenticationConfiguration));
-        jwtAuthenticationFilter.setFilterProcessesUrl("/api/members/login");
+        jwtAuthenticationFilter.setFilterProcessesUrl("/api/users/login");
 
         jwtAuthenticationFilter.setAuthenticationFailureHandler(authenticationFailureHandler);
         jwtAuthenticationFilter.setAuthenticationSuccessHandler(authenticationSuccessHandler);
@@ -131,10 +133,10 @@ public class WebSecurityConfig {
         List<String> skipPathList = new ArrayList<>();
 
         // 회원 관리 API SKIP 적용
-        skipPathList.add("POST,/api/members/signup");
-        skipPathList.add("POST,/api/members/email");
+        skipPathList.add("POST,/api/users/signup");
+        skipPathList.add("POST,/api/users/email");
         skipPathList.add("GET,/user/kakao/callback/**");
-        skipPathList.add("GET,/api/members/guest");
+        skipPathList.add("GET,/user/google/callback/**");
 
 
         //WebSocket 관련 -> Filter 역할 Intercepter로 대신함.
@@ -162,8 +164,7 @@ public class WebSecurityConfig {
     }
 
 
-    //cors 허용 적용
-    @Bean
+    @Bean // cors 허용 적용
     public CorsConfigurationSource corsConfigurationSource(){
         CorsConfiguration configuration = new CorsConfiguration();
 
