@@ -1,7 +1,5 @@
 package com.example.itDa.controller;
 
-import com.example.itDa.domain.repository.UserRepository;
-import com.example.itDa.infra.global.dto.ResponseDto;
 import com.example.itDa.infra.security.UserDetailsImpl;
 import com.example.itDa.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +19,6 @@ public class UserController {
     @GetMapping("/api/users/profile")
     public ResponseEntity<?> getUserProfile(@AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        return userService.getUserProfile(userDetails.getUser());
+        return userService.getUserProfile(userDetails);
     }
 }

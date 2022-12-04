@@ -12,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,14 +21,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class UserService {
     private final UserRepository userRepository;
-    private final KakaoUserService kakaoUserService;
-    private final BCryptPasswordEncoder passwordEncoder;
 
     public ResponseEntity<?> getUserProfile(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         checkEmail(userDetails.getUser().getEmail());
 
-        return new ResponseEntity<>(ResponseDto.success(ProfileResponseDto.of(user, documentRepository.countDocumentByUser(user))), HttpStatus.OK);
-
+        // 마이페이지에 내가 쓴 article, communities 넣어야하나 아니면 따로 줄 수 있나
+        return new ResponseEntity<>(ResponseDto.success(ProfileResponseDto.of(userDetails)), HttpStatus.OK);
     }
 
     private User checkEmail(String email) {

@@ -10,9 +10,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class KakaoSocialDto {
-
-    private Long kakaoId;
-    private String email;
+// 카카오서버랑 통신
+    private Long kakaoId; // email
     private String nickname;
     private String profileImage;
 }

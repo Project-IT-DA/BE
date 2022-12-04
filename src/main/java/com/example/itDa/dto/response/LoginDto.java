@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class LoginDto {
+    // 프론트랑 통신
     private String email;
     private String profileImge;
 }

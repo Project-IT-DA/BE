@@ -20,7 +20,7 @@ public class UserDetailsImpl implements UserDetails {
     }
 
 
-    public UserDetailsImpl getUser(){
+    public User getUser(){
         return user;
     }
 
