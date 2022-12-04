@@ -33,10 +33,6 @@ public class ArticleFile {
     @JoinColumn(name = "article_id", nullable = false)
     private Article article;
 
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
 
 
 

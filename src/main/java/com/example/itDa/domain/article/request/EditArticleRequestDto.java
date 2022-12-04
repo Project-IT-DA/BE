@@ -12,7 +12,6 @@ import lombok.Setter;
 public class EditArticleRequestDto {
     private String articleName;
     private String substance;
-    private String itemImg;
     private String location;
     private int sellPrice;
     private Category category;

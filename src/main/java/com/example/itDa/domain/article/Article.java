@@ -32,8 +32,6 @@ public class Article {
     @Column(nullable = false)
     private String articleName;
 
-    @Column(nullable = false)
-    private String itemImg;
 
     @Column(nullable = false)
     private String substance;
@@ -54,7 +52,7 @@ public class Article {
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = true)
     private User user;
 
 //    public Article(ArticleRequestDto requestDto) {
@@ -68,7 +66,6 @@ public class Article {
 
     public void update(EditArticleRequestDto editRequestDto) {
         this.articleName = editRequestDto.getArticleName();
-        this.itemImg = editRequestDto.getItemImg();
         this.substance = editRequestDto.getSubstance();
         this.location = editRequestDto.getLocation();
         this.category = editRequestDto.getCategory();
