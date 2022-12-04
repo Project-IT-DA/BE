@@ -26,6 +26,7 @@ public enum ErrorCode {
     // USER 관련
     USER_INFO_NOT_FORMATTED(HttpStatus.NOT_ACCEPTABLE, ""),
 
+
     //수정 필요
     USER_NOT_EXIST(HttpStatus.NOT_FOUND, "User이름을 찾을 수 없습니다"),
 

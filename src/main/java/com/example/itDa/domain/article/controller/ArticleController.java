@@ -2,6 +2,7 @@ package com.example.itDa.domain.article.controller;
 
 import com.example.itDa.domain.article.request.ArticleRequestDto;
 import com.example.itDa.domain.article.request.EditArticleRequestDto;
+import com.example.itDa.domain.article.response.ArticleResponseDto;
 import com.example.itDa.domain.article.service.ArticleService;
 import com.example.itDa.infra.global.dto.ResponseDto;
 import com.example.itDa.infra.security.UserDetailsImpl;
@@ -19,8 +20,9 @@ public class ArticleController {
     }
 
     @PostMapping("api/articles")
-    public ResponseDto<?> registerArticle(@AuthenticationPrincipal UserDetailsImpl userDetails,@RequestBody ArticleRequestDto requestDto){
-        return articleService.registerArticle(userDetails,requestDto);
+    public ResponseDto<ArticleResponseDto> registerArticle(@RequestBody ArticleRequestDto requestDto){
+        ArticleResponseDto articleResponseDto = articleService.registerArticle(requestDto);
+        return ResponseDto.success(articleResponseDto);
     }
 
     @GetMapping("api/articles")
@@ -29,16 +31,17 @@ public class ArticleController {
     }
 
     @GetMapping("api/articles/{articleId}")
-    public ResponseDto<?> viewArticle(@PathVariable Long id){
-        return articleService.viewArticle(id);
+    public ResponseDto<?> viewArticle(@PathVariable Long articleId){
+        return articleService.viewArticle(articleId);
     }
 
-    @PutMapping("api/articles/{articleId")
-    public ResponseDto<?> editArticle(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long articleId , @RequestBody EditArticleRequestDto editRequestDto){
-        return articleService.editArticle(userDetails,articleId,editRequestDto);
+    @PutMapping("api/articles/{articleId}")
+    public ResponseDto<ArticleResponseDto> editArticle(@PathVariable Long articleId , @RequestBody EditArticleRequestDto editRequestDto){
+        ArticleResponseDto articleResponseDto = articleService.editArticle(articleId,editRequestDto);
+        return ResponseDto.success(articleResponseDto);
     }
     @DeleteMapping("api/articles/{articleId}")
-    public ResponseDto<?> withdrawArticle(@AuthenticationPrincipal UserDetailsImpl userDetails,@PathVariable Long articleId){
-        return articleService.withdrawArticle(userDetails,articleId);
+    public ResponseDto<String> deleteArticle(@PathVariable Long articleId){
+        return ResponseDto.success(articleService.deleteArticle(articleId));
     }
 }

@@ -8,6 +8,8 @@ import com.example.itDa.domain.article.response.ArticleResponseDto;
 import com.example.itDa.domain.model.User;
 import com.example.itDa.domain.repository.UserRepository;
 import com.example.itDa.infra.global.dto.ResponseDto;
+import com.example.itDa.infra.global.exception.ErrorCode;
+import com.example.itDa.infra.global.exception.RequestException;
 import com.example.itDa.infra.security.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,13 +31,7 @@ public class ArticleService {
 
     //거래글 작성
     @Transactional
-    public ResponseDto<?> registerArticle(UserDetailsImpl userDetails,ArticleRequestDto requestDto) {
-
-        User user = getUser(userDetails.getUser().getId());
-        if(!article.getUser().equals(user)){
-            throw new IllegalStateException("로그인이 필요합니다.");
-        }
-
+    public ArticleResponseDto registerArticle(ArticleRequestDto requestDto) {
         Article registerArticle = articleRepository.save(
                 Article.builder()
                         .articleName(requestDto.getArticleName())
@@ -48,7 +44,7 @@ public class ArticleService {
         );
 //        Article article = new Article(registerArticle);
 //        article.updateStatus(Status.SELL);
-        return ResponseDto.success(new ArticleResponseDto(registerArticle));
+        return ArticleResponseDto.from(registerArticle);
     }
 
     public ResponseDto<?> viewAllArticle() {
@@ -65,42 +61,36 @@ public class ArticleService {
 
     }
 
-    public ResponseDto<?> viewArticle(Long id) {
-        Article article = articleRepository.findById(id).orElseThrow((
-        ) -> new IllegalArgumentException("존재하지 않는 게시글 아이디 입니다."));
+    public ResponseDto<?> viewArticle(Long articleId) {
+        Article article = getArticle(articleId);
+//                articleRepository.findById(id).orElseThrow((
+//        ) -> new IllegalArgumentException("존재하지 않는 게시글 아이디 입니다."));
         return ResponseDto.success(article);
     }
-
-    public ResponseDto<?> editArticle(UserDetailsImpl userDetails, Long articleId, EditArticleRequestDto editRequestDto) {
+    @Transactional
+    public ArticleResponseDto editArticle(Long articleId, EditArticleRequestDto editRequestDto) {
         Article article = getArticle(articleId);
-        User user = userDetails.getUser();
-        if(!article.getUser().equals(user)){
-            throw new IllegalStateException("로그인이 필요합니다.");
-        }
 
         article.update(editRequestDto);
 
-        return ResponseDto.success("거래글 수정 완료");
+        return ArticleResponseDto.from(article);
+    }
+    @Transactional
+    public String deleteArticle(Long articleId) {
+        Article article = getArticle(articleId);
+
+        articleRepository.delete(article);
+        return "삭제 완료";
     }
 
-    Article getArticle(Long id) {
-        return articleRepository.findById(id).orElseThrow((
-        )-> new RuntimeException("존재하지 않는 거래글 ID입니다.");
+    Article getArticle(Long articleId) {
+        return articleRepository.findById(articleId).orElseThrow((
+        )-> new RequestException(ErrorCode.ARTICLE_NOT_FOUND_404));
 //                new RuntimeException(ErrorCode.ARTICLE_NOT_FOUND_404));
     }
 
-    User getUser(Long id){
-        return userRepository.findById(id).orElseThrow(()->new RuntimeException("존재하지 않는 사용자 입니다."));
+    User getUser(Long userId){
+        return userRepository.findById(userId).orElseThrow(()->new RequestException(ErrorCode.UNAUTHORIZED_TOKEN));
     }
 
-    public ResponseDto<?> withdrawArticle(UserDetailsImpl userDetails, Long articleId) {
-        Article article = getArticle(articleId);
-        User user = getUser(userDetails.getUser().getId());
-        if(!article.getUser().equals(user)){
-            throw new IllegalStateException("로그인이 필요합니다.");
-        }
-
-        articleRepository.delete(article);
-        return ResponseDto.success("삭제 완료");
-    }
 }

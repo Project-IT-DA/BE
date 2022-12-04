@@ -42,7 +42,7 @@ public class Article {
     @Column(nullable = false)
     private int sellPrice;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     @Enumerated(EnumType.STRING)
     private Status status;
 
