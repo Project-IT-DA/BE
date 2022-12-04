@@ -34,7 +34,14 @@ public class User {
     @Column
     private int density;
 
-    @Enumerated(EnumType.STRING)
-    private LoginType loginType;
+    @Column
+    private Long kakaoId;
+
+    @Column
+    private String profileImage;
+
+    @Column(nullable = false)
+    @Enumerated(value = EnumType.STRING)
+    private UserSocialEnum social;
 
 }
