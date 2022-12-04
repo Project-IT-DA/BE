@@ -10,7 +10,6 @@ import com.example.itDa.domain.repository.UserRepository;
 import com.example.itDa.infra.global.dto.ResponseDto;
 import com.example.itDa.infra.global.exception.ErrorCode;
 import com.example.itDa.infra.global.exception.RequestException;
-import com.example.itDa.infra.security.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +21,8 @@ import java.util.List;
 public class ArticleService {
     private final ArticleRepository articleRepository;
     private final UserRepository userRepository;
+
+
 
     @Autowired
     public ArticleService(ArticleRepository articleRepository, UserRepository userRepository) {
