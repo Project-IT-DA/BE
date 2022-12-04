@@ -64,7 +64,9 @@ public class WebSecurityConfig {
                         "/swagger/**",
                         "/h2-console/**",
                         "/stomp/chat/**",
-                        "/actuator/**"
+                        "/actuator/**",
+                        "/api/articles/**"
+
         );
 
     }

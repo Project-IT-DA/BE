@@ -4,10 +4,14 @@ import com.example.itDa.domain.Category;
 import com.example.itDa.domain.Status;
 import com.example.itDa.domain.article.Article;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.List;
+
 @Getter
+@Builder
 @AllArgsConstructor
 public class ArticleResponseDto {
 
@@ -32,5 +36,30 @@ public class ArticleResponseDto {
         this.location = registerArticle.getLocation();
         this.createdAt = registerArticle.getCreatedAt();
         this.sellPrice = registerArticle.getSellPrice();
+    }
+
+    public static ArticleResponseDto from(Article article) {
+        return ArticleResponseDto.builder()
+                .id(article.getId())
+                .articleName(article.getArticleName())
+                .substance(article.getSubstance())
+                .imgUrl(article.getItemImg())
+                .category(article.getCategory())
+                .status(article.getStatus())
+                .location(article.getLocation())
+                .sellPrice(article.getSellPrice())
+                .build();
+
+    }
+
+    public static ArticleResponseDto viewAll(Article article) {
+        return ArticleResponseDto.builder()
+                .id(article.getId())
+                .articleName(article.getArticleName())
+                .sellPrice(article.getSellPrice())
+                .category(article.getCategory())
+                .status(article.getStatus())
+                .location(article.getLocation())
+                .build();
     }
 }
