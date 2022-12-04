@@ -2,10 +2,13 @@ package com.example.itDa.service;
 
 import com.example.itDa.domain.model.Comment;
 import com.example.itDa.domain.model.Community;
+import com.example.itDa.domain.model.User;
 import com.example.itDa.domain.repository.CommentRepository;
+import com.example.itDa.domain.repository.UserRepository;
 import com.example.itDa.dto.request.CommentRequestDto;
 import com.example.itDa.dto.response.CommentResponseDto;
 import com.example.itDa.infra.global.dto.ResponseDto;
+import com.example.itDa.infra.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,8 +22,12 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
     private final CommunityService communityService;
+    private final UserRepository userRepository;
     @Transactional
-    public ResponseDto<?> createComment(CommentRequestDto requestDto) {
+    public ResponseDto<?> createComment(UserDetailsImpl userDetails, CommentRequestDto requestDto) {
+        User user = userRepository.findByEmail(userDetails.getUsername()).orElseThrow(
+                () -> new RuntimeException("NOT_FOUND_USER")
+        );
         Community community = communityService.isPresentCommunity(requestDto.getCommuId());
 
         Comment comment = Comment.builder()
@@ -39,26 +46,32 @@ public class CommentService {
 
 
     @Transactional
-    public ResponseDto<?> updateComment(Long commentId, CommentRequestDto requestDto) {
+    public ResponseDto<?> updateComment(UserDetailsImpl userDetails, Long commentId, CommentRequestDto requestDto) {
+        User user = userRepository.findByEmail(userDetails.getUsername()).orElseThrow(
+                () -> new RuntimeException("NOT_FOUND_USER")
+        );
         Community community = communityService.isPresentCommunity(requestDto.getCommuId());
 
         Comment comment = isPresentComment(commentId);
         if (comment == null) {
             return ResponseDto.fail("NOT_FOUND", "해당 코멘트가 없습니다.");
         }
-        comment.update(requestDto);
-
+        if (comment.getUser().getEmail().equals(userDetails.getUsername())){
+            comment.update(requestDto);
+        }
         return ResponseDto.success("코멘트가 수정되었습니다.");
     }
 
     @Transactional
-    public ResponseDto<?> deleteComment(Long commentId) {
+    public ResponseDto<?> deleteComment(UserDetailsImpl userDetails, Long commentId) {
         Comment comment = isPresentComment(commentId);
         if (comment == null) {
             return ResponseDto.fail("NOT_FOUND", "해당 코멘트가 없습니다");
         }
 
-        commentRepository.delete(comment);
+        if (comment.getUser().getEmail().equals(userDetails.getUsername())){
+            commentRepository.delete(comment);
+        }
 
         return ResponseDto.success("코멘트가 삭제되었습니다.");
     }

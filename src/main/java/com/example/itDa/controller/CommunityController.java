@@ -2,9 +2,12 @@ package com.example.itDa.controller;
 
 import com.example.itDa.dto.request.CommunityRequestDto;
 import com.example.itDa.infra.global.dto.ResponseDto;
+import com.example.itDa.infra.security.UserDetailsImpl;
 import com.example.itDa.service.CommunityService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -14,8 +17,9 @@ public class CommunityController {
     private final CommunityService communityService;
 
     @PostMapping("/community")
-    public ResponseDto<?> createCommunity (@RequestBody CommunityRequestDto requestDto) {
-        return communityService.createCommunity(requestDto);
+    public ResponseDto<?> createCommunity (@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestPart(value = "files", required = false) MultipartFile[] multipartFiles,
+                                           @RequestPart(value = "data") CommunityRequestDto requestDto) {
+        return communityService.createCommunity(userDetails,multipartFiles,requestDto);
     }
 
     @GetMapping("/community")
@@ -29,13 +33,13 @@ public class CommunityController {
     }
 
     @PutMapping("/community/{commuId}")
-    public ResponseDto<?> updateCommunity (@PathVariable("commuId") Long commuId, @RequestBody CommunityRequestDto requestDto){
-        return communityService.updateCommunity(commuId, requestDto);
+    public ResponseDto<?> updateCommunity (@PathVariable("commuId") Long commuId,@AuthenticationPrincipal UserDetailsImpl userDetails ,@RequestBody CommunityRequestDto requestDto){
+        return communityService.updateCommunity(commuId, userDetails, requestDto);
     }
 
     @DeleteMapping("/community/{commuId}")
-    public ResponseDto<?> deleteCommunity (@PathVariable("commuId") Long commuId) {
-        return communityService.deleteCommunity(commuId);
+    public ResponseDto<?> deleteCommunity (@PathVariable("commuId") Long commuId,@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return communityService.deleteCommunity(commuId, userDetails);
     }
 
 }

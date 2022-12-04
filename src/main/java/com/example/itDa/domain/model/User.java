@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -33,6 +35,12 @@ public class User {
 
     @Column
     private int density;
+
+    @OneToMany(mappedBy = "user")
+    private List<Community> communityList = new ArrayList<Community>();
+
+    @OneToMany(mappedBy = "user")
+    private List<Comment> commentList = new ArrayList<Comment>();
 
     @Enumerated(EnumType.STRING)
     private LoginType loginType;

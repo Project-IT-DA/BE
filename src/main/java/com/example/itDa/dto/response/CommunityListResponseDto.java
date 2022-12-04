@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @Getter
 public class CommunityListResponseDto {
     private Long commuId;
+    private Long userId;
     private String title;
     private String content;
     private String imgUrl;

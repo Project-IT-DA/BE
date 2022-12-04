@@ -2,17 +2,25 @@ package com.example.itDa.service;
 
 import com.example.itDa.domain.model.Comment;
 import com.example.itDa.domain.model.Community;
+import com.example.itDa.domain.model.CommunityFile;
+import com.example.itDa.domain.model.User;
 import com.example.itDa.domain.repository.CommentRepository;
+import com.example.itDa.domain.repository.CommunityFileRepository;
 import com.example.itDa.domain.repository.CommunityRepository;
+import com.example.itDa.domain.repository.UserRepository;
 import com.example.itDa.dto.request.CommunityRequestDto;
 import com.example.itDa.dto.response.CommentResponseDto;
 import com.example.itDa.dto.response.CommunityListResponseDto;
 import com.example.itDa.dto.response.CommunityResponseDto;
 import com.example.itDa.infra.global.dto.ResponseDto;
+import com.example.itDa.infra.s3.S3UploaderService;
+import com.example.itDa.infra.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -23,17 +31,48 @@ public class CommunityService {
 
     private final CommunityRepository communityRepository;
     private final CommentRepository commentRepository;
+    private final UserRepository userRepository;
+    private final S3UploaderService s3UploaderService;
+    private final CommunityFileRepository communityFileRepository;
     @Transactional
-    public ResponseDto<?> createCommunity(CommunityRequestDto requestDto) {
+    public ResponseDto<?> createCommunity(UserDetailsImpl userDetails, MultipartFile[] multipartFiles, CommunityRequestDto requestDto) {
+
+        User user = userRepository.findByEmail(userDetails.getUsername()).orElseThrow(
+                () -> new RuntimeException("NOT_FOUND_USER")
+        );
 
         Community community = Community.builder()
                 .title(requestDto.getTitle())
                 .content(requestDto.getContent())
                 .imgUrl(requestDto.getImgUrl())
+                .user(user)
                 .build();
 
         communityRepository.save(community);
+
+        List<String> fileUrls;
+        try {
+            fileUrls = s3UploaderService.uploadFormDataFiles(multipartFiles, "community");
+        } catch (IOException e){
+            throw new RuntimeException();
+        }
+        List<String> filenames = new ArrayList<>();
+        List<CommunityFile> communityFiles = new ArrayList<>();
+
+        if(fileUrls != null){
+            for(int i = 0; i < fileUrls.size(); i++){
+                filenames.add(multipartFiles[i].getOriginalFilename());
+                communityFiles.add(CommunityFile.builder()
+                        .community(community)
+                        .fileName(multipartFiles[i].getOriginalFilename())
+                        .fileUrl(fileUrls.get(i))
+                        .build());
+            }
+        }
+        communityFileRepository.saveAll(communityFiles);
+
         CommunityResponseDto communityResponseDto = CommunityResponseDto.builder()
+                .userId(user.getId())
                 .commuId(community.getCommuId())
                 .title(community.getTitle())
                 .content(community.getContent())
@@ -56,6 +95,7 @@ public class CommunityService {
 
             responseDtoList.add(CommunityListResponseDto.builder()
                     .commuId(community.getCommuId())
+                    .userId(community.getUser().getId())
                     .title(community.getTitle())
                     .content(community.getContent())
                     .imgUrl(community.getImgUrl())
@@ -86,6 +126,7 @@ public class CommunityService {
 
         CommunityResponseDto communityResponseDto = CommunityResponseDto.builder()
                 .commuId(community.getCommuId())
+                .userId(community.getUser().getId())
                 .title(community.getTitle())
                 .content(community.getContent())
                 .imgUrl(community.getImgUrl())
@@ -96,20 +137,33 @@ public class CommunityService {
     }
 
     @Transactional
-    public ResponseDto<?> updateCommunity(Long commuId, CommunityRequestDto requestDto) {
+    public ResponseDto<?> updateCommunity(Long commuId, UserDetailsImpl userDetails, CommunityRequestDto requestDto) {
+        User user = userRepository.findByEmail(userDetails.getUsername()).orElseThrow(
+                () -> new RuntimeException("NOT_FOUND_USER")
+        );
+
         Community community = isPresentCommunity(commuId);
         if (community == null) {
             return ResponseDto.fail("NOT_FOUND", "해당 커뮤니티 글이 없습니다.");}
-            community.updateCommunity(requestDto);
+
+        if(community.getUser().getEmail().equals(user.getEmail())){
+            community.updateCommunity(requestDto);}
 
         return ResponseDto.success("커뮤니티 글이 수정되었습니다.");
     }
 
 
-        public ResponseDto<?> deleteCommunity (Long commuId) {
+        public ResponseDto<?> deleteCommunity (Long commuId, UserDetailsImpl userDetails) {
+            User user = userRepository.findByEmail(userDetails.getUsername()).orElseThrow(
+                    () -> new RuntimeException("NOT_FOUND_USER")
+            );
+
             Community community = isPresentCommunity(commuId);
             if (community == null) {
                 return ResponseDto.fail("NOT_FOUND", "해당 커뮤니티 글이 없습니다.");
+            }
+            if(community.getUser() != user) {
+                return ResponseDto.fail("BAD_REQUEST", "글쓴이만 삭제 할 수 있습니다.");
             }
             communityRepository.deleteById(commuId);
 

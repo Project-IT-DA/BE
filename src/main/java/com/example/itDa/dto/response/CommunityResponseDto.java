@@ -1,5 +1,6 @@
 package com.example.itDa.dto.response;
 
+import com.example.itDa.domain.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,6 +15,7 @@ import java.util.List;
 public class CommunityResponseDto {
 
     private Long commuId;
+    private Long userId;
     private String title;
     private String content;
     private String imgUrl;
