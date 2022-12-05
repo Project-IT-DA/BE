@@ -17,7 +17,7 @@ public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long commentId;
+    private Long id;
 
     private String content;
 
@@ -25,7 +25,7 @@ public class Comment {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @JoinColumn(name = "commu_id", nullable = false)
+    @JoinColumn(name = "community_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     private Community community;
 

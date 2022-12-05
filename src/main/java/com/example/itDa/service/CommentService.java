@@ -8,6 +8,8 @@ import com.example.itDa.domain.repository.UserRepository;
 import com.example.itDa.dto.request.CommentRequestDto;
 import com.example.itDa.dto.response.CommentResponseDto;
 import com.example.itDa.infra.global.dto.ResponseDto;
+import com.example.itDa.infra.global.exception.ErrorCode;
+import com.example.itDa.infra.global.exception.RequestException;
 import com.example.itDa.infra.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,7 +28,7 @@ public class CommentService {
     @Transactional
     public ResponseDto<?> createComment(UserDetailsImpl userDetails, CommentRequestDto requestDto) {
         User user = userRepository.findByEmail(userDetails.getUsername()).orElseThrow(
-                () -> new RuntimeException("NOT_FOUND_USER")
+                () -> new RequestException(ErrorCode.USER_NOT_EXIST)
         );
         Community community = communityService.isPresentCommunity(requestDto.getCommuId());
 
@@ -37,7 +39,7 @@ public class CommentService {
 
         commentRepository.save(comment);
         CommentResponseDto commentResponseDto = CommentResponseDto.builder()
-                .commentId(comment.getCommentId())
+                .commentId(comment.getId())
                 .content(comment.getContent())
                 .build();
 
@@ -48,7 +50,7 @@ public class CommentService {
     @Transactional
     public ResponseDto<?> updateComment(UserDetailsImpl userDetails, Long commentId, CommentRequestDto requestDto) {
         User user = userRepository.findByEmail(userDetails.getUsername()).orElseThrow(
-                () -> new RuntimeException("NOT_FOUND_USER")
+                () -> new RequestException(ErrorCode.USER_NOT_EXIST)
         );
         Community community = communityService.isPresentCommunity(requestDto.getCommuId());
 
@@ -66,11 +68,13 @@ public class CommentService {
     public ResponseDto<?> deleteComment(UserDetailsImpl userDetails, Long commentId) {
         Comment comment = isPresentComment(commentId);
         if (comment == null) {
-            return ResponseDto.fail("NOT_FOUND", "해당 코멘트가 없습니다");
+            return ResponseDto.fail("COMMENT_NOT_FOUND_404", "해당 코멘트가 존재하지 않습니다.");
         }
 
         if (comment.getUser().getEmail().equals(userDetails.getUsername())){
             commentRepository.delete(comment);
+        } else {
+            return ResponseDto.fail("NO_PERMISSION_TO_DELETE_NOTICE_400","삭제 권한이 없습니다.");
         }
 
         return ResponseDto.success("코멘트가 삭제되었습니다.");

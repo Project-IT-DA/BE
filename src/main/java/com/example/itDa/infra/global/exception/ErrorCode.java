@@ -26,6 +26,7 @@ public enum ErrorCode {
     // USER 관련
     USER_INFO_NOT_FORMATTED(HttpStatus.NOT_ACCEPTABLE, ""),
 
+
     //수정 필요
     USER_NOT_EXIST(HttpStatus.NOT_FOUND, "User이름을 찾을 수 없습니다"),
 
@@ -35,6 +36,9 @@ public enum ErrorCode {
 
     // Community 관련
     COMMUNITY_NOT_FOUND_404(HttpStatus.NOT_FOUND, "해당 게시글이 존재하지 않습니다."),
+
+    // Comment 관련
+    COMMENT_NOT_FOUND_404(HttpStatus.NOT_FOUND, "해당 코멘트가 존재하지 않습니다."),
 
     // Role 관련
     NO_PERMISSION_TO_WRITE_NOTICE_400(HttpStatus.FORBIDDEN, "작성 권한이 없습니다."),

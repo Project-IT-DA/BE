@@ -13,15 +13,17 @@ import lombok.Setter;
 public class ArticleRequestDto {
     private String articleName;
     private String substance;
-    private String itemImg;
+    private String fileUrl;
+    private String fileName;
     private String location;
     private Category category;
     private int sellPrice;
 
-    public ArticleRequestDto(String articleName, String substance, String itemImg, String location, Category category, int sellPrice) {
+    public ArticleRequestDto(String articleName, String substance, String fileUrl,String fileName, String location, Category category, int sellPrice) {
         this.articleName = articleName;
         this.substance = substance;
-        this.itemImg = itemImg;
+        this.fileUrl = fileUrl;
+        this.fileName = fileName;
         this.location = location;
         this.category = category;
         this.sellPrice = sellPrice;

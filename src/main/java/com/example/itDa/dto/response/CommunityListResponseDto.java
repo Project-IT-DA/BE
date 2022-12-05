@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -14,7 +16,8 @@ public class CommunityListResponseDto {
     private Long userId;
     private String title;
     private String content;
-    private String imgUrl;
+    private List<String> imgUrls;
+    private List<String> imgNames;
     private int commentsNum;
 
 }

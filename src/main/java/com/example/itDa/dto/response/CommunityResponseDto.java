@@ -1,6 +1,5 @@
 package com.example.itDa.dto.response;
 
-import com.example.itDa.domain.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,7 +17,8 @@ public class CommunityResponseDto {
     private Long userId;
     private String title;
     private String content;
-    private String imgUrl;
     private List<CommentResponseDto> comments;
+    private List<String> imgNames;
+    private List<String> imgUrls;
 
 }

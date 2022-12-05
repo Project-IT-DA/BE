@@ -13,6 +13,8 @@ import com.example.itDa.dto.response.CommentResponseDto;
 import com.example.itDa.dto.response.CommunityListResponseDto;
 import com.example.itDa.dto.response.CommunityResponseDto;
 import com.example.itDa.infra.global.dto.ResponseDto;
+import com.example.itDa.infra.global.exception.ErrorCode;
+import com.example.itDa.infra.global.exception.RequestException;
 import com.example.itDa.infra.s3.S3UploaderService;
 import com.example.itDa.infra.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
@@ -38,34 +40,33 @@ public class CommunityService {
     public ResponseDto<?> createCommunity(UserDetailsImpl userDetails, MultipartFile[] multipartFiles, CommunityRequestDto requestDto) {
 
         User user = userRepository.findByEmail(userDetails.getUsername()).orElseThrow(
-                () -> new RuntimeException("NOT_FOUND_USER")
+                () -> new RequestException(ErrorCode.USER_NOT_EXIST)
         );
 
         Community community = Community.builder()
                 .title(requestDto.getTitle())
                 .content(requestDto.getContent())
-                .imgUrl(requestDto.getImgUrl())
                 .user(user)
                 .build();
 
         communityRepository.save(community);
 
-        List<String> fileUrls;
+        List<String> imgUrls;
         try {
-            fileUrls = s3UploaderService.uploadFormDataFiles(multipartFiles, "community");
+            imgUrls = s3UploaderService.uploadFormDataFiles(multipartFiles, "community");
         } catch (IOException e){
             throw new RuntimeException();
         }
-        List<String> filenames = new ArrayList<>();
+        List<String> imgNames = new ArrayList<>();
         List<CommunityFile> communityFiles = new ArrayList<>();
 
-        if(fileUrls != null){
-            for(int i = 0; i < fileUrls.size(); i++){
-                filenames.add(multipartFiles[i].getOriginalFilename());
+        if(imgUrls != null){
+            for(int i = 0; i < imgUrls.size(); i++){
+                imgNames.add(multipartFiles[i].getOriginalFilename());
                 communityFiles.add(CommunityFile.builder()
                         .community(community)
-                        .fileName(multipartFiles[i].getOriginalFilename())
-                        .fileUrl(fileUrls.get(i))
+                        .imgName(multipartFiles[i].getOriginalFilename())
+                        .imgUrl(imgUrls.get(i))
                         .build());
             }
         }
@@ -73,10 +74,11 @@ public class CommunityService {
 
         CommunityResponseDto communityResponseDto = CommunityResponseDto.builder()
                 .userId(user.getId())
-                .commuId(community.getCommuId())
+                .commuId(community.getId())
                 .title(community.getTitle())
                 .content(community.getContent())
-                .imgUrl(community.getImgUrl())
+                .imgUrls(imgUrls)
+                .imgNames(imgNames)
                 .build();
 
         return ResponseDto.success(communityResponseDto);
@@ -90,15 +92,20 @@ public class CommunityService {
         List<Community> communityList = communityRepository.findAll();
         List<CommunityListResponseDto> responseDtoList = new ArrayList<>();
 
+
         for(Community community : communityList){
             int comments = commentRepository.countAllByCommunity(community);
-
+            List<String> imgUrls = new ArrayList<>();
+            List<CommunityFile> communityFile = communityFileRepository.findAllByCommunityId(community.getId());
+            for (int i = 0; i < communityFile.size(); i++) {
+                imgUrls.add(communityFile.get(i).getImgUrl());
+            }
             responseDtoList.add(CommunityListResponseDto.builder()
-                    .commuId(community.getCommuId())
+                    .commuId(community.getId())
                     .userId(community.getUser().getId())
                     .title(community.getTitle())
                     .content(community.getContent())
-                    .imgUrl(community.getImgUrl())
+                    .imgUrls(imgUrls)
                     .commentsNum(comments)
                     .build());
         }
@@ -111,25 +118,25 @@ public class CommunityService {
     public ResponseDto<?> getCommunity(Long commuId) {
         Community community = isPresentCommunity(commuId);
         if (community == null){
-            return ResponseDto.fail("NOT_FOUND", "해당 커뮤니티 글이 없습니다.");
+            return ResponseDto.fail("COMMUNITY_NOT_FOUND_404", "해당 게시글이 존재하지 않습니다.");
         }
 
         List<Comment> commentList = commentRepository.findAllByCommunity(community);
         List<CommentResponseDto> commentResponseDtoList = new ArrayList<>();
+        List<CommunityFile> communityFileList = communityFileRepository.findAllByCommunityId(commuId);
         for (Comment comment : commentList) {
             commentResponseDtoList.add(
                     CommentResponseDto.builder()
-                            .commentId(comment.getCommentId())
+                            .commentId(comment.getId())
                             .content(community.getContent())
                             .build());
         }
 
         CommunityResponseDto communityResponseDto = CommunityResponseDto.builder()
-                .commuId(community.getCommuId())
+                .commuId(community.getId())
                 .userId(community.getUser().getId())
                 .title(community.getTitle())
                 .content(community.getContent())
-                .imgUrl(community.getImgUrl())
                 .comments(commentResponseDtoList)
                 .build();
 
@@ -139,12 +146,12 @@ public class CommunityService {
     @Transactional
     public ResponseDto<?> updateCommunity(Long commuId, UserDetailsImpl userDetails, CommunityRequestDto requestDto) {
         User user = userRepository.findByEmail(userDetails.getUsername()).orElseThrow(
-                () -> new RuntimeException("NOT_FOUND_USER")
+                () -> new RequestException(ErrorCode.USER_NOT_EXIST)
         );
 
         Community community = isPresentCommunity(commuId);
         if (community == null) {
-            return ResponseDto.fail("NOT_FOUND", "해당 커뮤니티 글이 없습니다.");}
+            return ResponseDto.fail("COMMUNITY_NOT_FOUND_404", "해당 커뮤니티 글이 없습니다.");}
 
         if(community.getUser().getEmail().equals(user.getEmail())){
             community.updateCommunity(requestDto);}
@@ -155,7 +162,7 @@ public class CommunityService {
 
         public ResponseDto<?> deleteCommunity (Long commuId, UserDetailsImpl userDetails) {
             User user = userRepository.findByEmail(userDetails.getUsername()).orElseThrow(
-                    () -> new RuntimeException("NOT_FOUND_USER")
+                    () -> new RequestException(ErrorCode.USER_NOT_EXIST)
             );
 
             Community community = isPresentCommunity(commuId);

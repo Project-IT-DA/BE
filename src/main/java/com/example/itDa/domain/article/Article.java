@@ -4,7 +4,9 @@ import com.example.itDa.domain.Category;
 import com.example.itDa.domain.Status;
 import com.example.itDa.domain.article.request.ArticleRequestDto;
 import com.example.itDa.domain.article.request.EditArticleRequestDto;
+import com.example.itDa.domain.model.User;
 import lombok.*;
+import net.minidev.json.annotate.JsonIgnore;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.*;
@@ -30,8 +32,6 @@ public class Article {
     @Column(nullable = false)
     private String articleName;
 
-    @Column(nullable = false)
-    private String itemImg;
 
     @Column(nullable = false)
     private String substance;
@@ -42,13 +42,18 @@ public class Article {
     @Column(nullable = false)
     private int sellPrice;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     @Enumerated(EnumType.STRING)
     private Status status;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Category category;
+
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = true)
+    private User user;
 
 //    public Article(ArticleRequestDto requestDto) {
 //        this.articleName = requestDto.getArticleName();
@@ -61,7 +66,6 @@ public class Article {
 
     public void update(EditArticleRequestDto editRequestDto) {
         this.articleName = editRequestDto.getArticleName();
-        this.itemImg = editRequestDto.getItemImg();
         this.substance = editRequestDto.getSubstance();
         this.location = editRequestDto.getLocation();
         this.category = editRequestDto.getCategory();

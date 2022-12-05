@@ -1,5 +1,6 @@
-package com.example.itDa.domain.model;
+package com.example.itDa.domain.article;
 
+import com.example.itDa.domain.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -7,26 +8,34 @@ import lombok.NoArgsConstructor;
 import net.minidev.json.annotate.JsonIgnore;
 
 import javax.persistence.*;
+import javax.persistence.criteria.Fetch;
 
 @Entity
-@AllArgsConstructor
-@NoArgsConstructor
 @Getter
 @Builder
-public class CommunityFile {
+@NoArgsConstructor
+@AllArgsConstructor
+public class ArticleFile {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column
-    private String imgName;
+    private String fileName;
 
     @Column
-    private String imgUrl;
+    private String fileUrl;
 
-    @JoinColumn(name = "community_id", nullable = false)
+
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
-    private Community community;
+    @JoinColumn(name = "article_id", nullable = false)
+    private Article article;
+
+
+
+
+
 
 }
