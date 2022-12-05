@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class UserService {
     private final UserRepository userRepository;
+    private final KakaoUserService kakaoUserService;
 
     public ResponseEntity<?> getUserProfile(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         checkEmail(userDetails.getUser().getEmail());
@@ -33,4 +34,12 @@ public class UserService {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new RequestException(ErrorCode.USER_NOT_EXIST));
     }
+
+    // 회원탈퇴
+    public ResponseDto<Boolean> signOut(User user) {
+        kakaoUserService.signOutKakaoUser(user);
+        return ResponseDto.success(true);
+    }
+
+
 }

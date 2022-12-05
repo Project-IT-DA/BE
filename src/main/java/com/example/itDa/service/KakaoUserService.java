@@ -31,19 +31,18 @@ import java.util.UUID;
 
 import static com.example.itDa.infra.security.handler.AuthenticationSuccessHandler.AUTH_HEADER;
 import static com.example.itDa.infra.security.handler.AuthenticationSuccessHandler.TOKEN_TYPE;
-
 @Slf4j
-@Service
-@RequiredArgsConstructor
 @Transactional
+@RequiredArgsConstructor
+@Service
 public class KakaoUserService {
     @Value("${kakao.login.admin-key}")
     private String APP_ADMIN_KEY;
-
     private final UserRepository userRepository;
 
     private final BCryptPasswordEncoder encoder;
 
+    //카카오로그인
     public ResponseDto<LoginDto> kakaoLogin(String code, HttpServletResponse response) throws IOException {
 
         // 1. "인가 코드"로 "액세스 토큰" 요청
@@ -62,7 +61,7 @@ public class KakaoUserService {
         return ResponseDto.success(
                 LoginDto.builder()
                         .email(kakaoUser.getEmail())
-                        .profileImge(kakaoUser.getProfileImage())
+                        .profileImg(kakaoUser.getProfileImage())
                         .build()
         );
 
@@ -73,6 +72,31 @@ public class KakaoUserService {
         UserDetailsImpl userDetails = new UserDetailsImpl(kakaoUser);
         String token = JwtTokenUtils.generateJwtToken(userDetails);
         response.addHeader(AUTH_HEADER, TOKEN_TYPE + " " + token);
+
+    }
+
+    private User registerKakaoUser(KakaoSocialDto kakaoSocialDto) {
+
+        // User 정보있는지 확인
+        User kakaoUser = userRepository.findByEmail(kakaoSocialDto.getEmail()).orElse(null);
+
+        // User 정보가 없으면 회원가입 시키기
+        if (kakaoUser == null) {
+            String password = UUID.randomUUID().toString();
+
+            kakaoUser = User.builder()
+                    .kakaoId(kakaoSocialDto.getKakaoId())
+                    .nickname(kakaoSocialDto.getNickname())
+                    .password(encoder.encode(password))
+                    .email(kakaoSocialDto.getEmail())
+                    .social(UserSocialEnum.KAKAO)
+                    .profileImage(kakaoSocialDto.getProfileImage())
+                    .build();
+
+            userRepository.save(kakaoUser);
+        }
+
+        return kakaoUser;
 
     }
 
@@ -107,31 +131,6 @@ public class KakaoUserService {
         JsonNode jsonNode = objectMapper.readTree(responseBody);
 
         return jsonNode.get("access_token").asText();
-    }
-
-    private User registerKakaoUser(KakaoSocialDto kakaoSocialDto) {
-
-        // User 정보있는지 확인
-        User kakaoUser = userRepository.findByEmail(kakaoSocialDto.getEmail()).orElse(null);
-
-        // User 정보가 없으면 회원가입 시키기
-        if (kakaoUser == null) {
-            String password = UUID.randomUUID().toString();
-
-            kakaoUser = User.builder()
-                    .kakaoId(kakaoSocialDto.getKakaoId())
-                    .nickname(kakaoSocialDto.getNickname())
-                    .password(encoder.encode(password))
-                    .email(kakaoSocialDto.getEmail())
-                    .social(UserSocialEnum.KAKAO)
-                    .profileImage(kakaoSocialDto.getProfileImage())
-                    .build();
-
-            userRepository.save(kakaoUser);
-        }
-
-        return kakaoUser;
-
     }
 
     private KakaoSocialDto getKakaoUserInfo(String accessToken) throws IOException {
@@ -177,5 +176,28 @@ public class KakaoUserService {
                 .profileImage(profileImage)
                 .kakaoId(kakaoId)
                 .build();
+    }
+
+    //카카오 회원일 경우, application 연결 끊기 과정 진행
+    public void signOutKakaoUser(User user) {
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "KakaoAK " + APP_ADMIN_KEY);
+        headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
+
+        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
+        body.add("target_id_type", "user_id");
+        body.add("target_id", user.getKakaoId().toString());
+
+        HttpEntity<MultiValueMap<String, String>> kakaoUserInfoRequest = new HttpEntity<>(body, headers);
+        RestTemplate rt = new RestTemplate();
+
+        ResponseEntity<String> response = rt.exchange(
+                "https://kapi.kakao.com/v1/user/unlink",
+                HttpMethod.POST,
+                kakaoUserInfoRequest,
+                String.class
+        );
+        log.info("회원탈퇴 한 유저의 kakaoId : {}", response.getBody());
     }
 }
