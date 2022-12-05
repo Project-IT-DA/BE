@@ -2,12 +2,10 @@ package com.example.itDa.domain.article;
 
 import com.example.itDa.domain.Category;
 import com.example.itDa.domain.Status;
-import com.example.itDa.domain.article.request.ArticleRequestDto;
 import com.example.itDa.domain.article.request.EditArticleRequestDto;
 import com.example.itDa.domain.model.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
-import org.springframework.stereotype.Service;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;

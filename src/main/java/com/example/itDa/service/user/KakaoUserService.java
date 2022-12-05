@@ -1,4 +1,4 @@
-package com.example.itDa.service;
+package com.example.itDa.service.user;
 
 import com.example.itDa.domain.model.User;
 import com.example.itDa.domain.model.UserSocialEnum;
@@ -38,8 +38,15 @@ import static com.example.itDa.infra.security.handler.AuthenticationSuccessHandl
 public class KakaoUserService {
     @Value("${kakao.login.admin-key}")
     private String APP_ADMIN_KEY;
-    private final UserRepository userRepository;
 
+    @Value("${kakao.login.client-id}")
+    private String CLIENT_ID;
+
+    @Value("${kakao.login.redirect-url}")
+    private String REDIRECT_URL;
+
+
+    private final UserRepository userRepository;
     private final BCryptPasswordEncoder encoder;
 
     //카카오로그인
@@ -60,8 +67,9 @@ public class KakaoUserService {
 
         return ResponseDto.success(
                 LoginDto.builder()
+                        .nickname(kakaoUser.getNickname())
                         .email(kakaoUser.getEmail())
-                        .profileImg(kakaoUser.getProfileImage())
+                        .profileImg(kakaoUser.getProfileImg())
                         .build()
         );
 
@@ -90,7 +98,7 @@ public class KakaoUserService {
                     .password(encoder.encode(password))
                     .email(kakaoSocialDto.getEmail())
                     .social(UserSocialEnum.KAKAO)
-                    .profileImage(kakaoSocialDto.getProfileImage())
+                    .profileImg(kakaoSocialDto.getProfileImg())
                     .build();
 
             userRepository.save(kakaoUser);
@@ -109,8 +117,8 @@ public class KakaoUserService {
         // HTTP Body 생성
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "authorization_code");
-        body.add("client_id", "c8cf862f6090965a35b740904db575b1");
-        body.add("redirect_uri", "https://d-velkit.com/kakao");
+        body.add("client_id", CLIENT_ID);
+        body.add("redirect_uri", REDIRECT_URL);
         body.add("code", code);
 
         // HTTP 요청 보내기
@@ -139,7 +147,7 @@ public class KakaoUserService {
         headers.add("Authorization", "Bearer " + accessToken);
         headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
 
-        // HTTP 요청 보내기
+        // HTTP 요청 보내기 -> 카카오한테 보내는거
         HttpEntity<MultiValueMap<String, String>> kakaoUserInfoRequest = new HttpEntity<>(headers);
         RestTemplate rt = new RestTemplate();
         ResponseEntity<String> response = rt.exchange(
@@ -148,10 +156,11 @@ public class KakaoUserService {
                 kakaoUserInfoRequest,
                 String.class
         );
+        // rt.exchange하면 response에 밑에 것들이 들어간다.
 
         String responseBody = response.getBody();
 
-        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectMapper objectMapper = new ObjectMapper(); // 객체로 만들어줌
 
         JsonNode jsonNode = objectMapper
                 .readTree(responseBody);
@@ -162,7 +171,7 @@ public class KakaoUserService {
                 .get("properties")
                 .get("nickname").asText();
 
-        String profileImage = jsonNode
+        String profileImg = jsonNode
                 .get("properties")
                 .get("profile_image").asText();
 
@@ -171,10 +180,10 @@ public class KakaoUserService {
                 .get("email").asText();
 
         return KakaoSocialDto.builder()
+                .kakaoId(kakaoId)
                 .email(email)
                 .nickname(nickname)
-                .profileImage(profileImage)
-                .kakaoId(kakaoId)
+                .profileImg(profileImg)
                 .build();
     }
 
@@ -200,4 +209,6 @@ public class KakaoUserService {
         );
         log.info("회원탈퇴 한 유저의 kakaoId : {}", response.getBody());
     }
+
+
 }

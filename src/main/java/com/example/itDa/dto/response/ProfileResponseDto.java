@@ -28,7 +28,7 @@ public class ProfileResponseDto {
                 .email(userDetails.getUser().getEmail())
                 .nickname(userDetails.getUser().getNickname())
                 .createdAt(userDetails.getUser().getCreatedAt())
-                .profileImge(userDetails.getUser().getProfileImage())
+                .profileImge(userDetails.getUser().getProfileImg())
                 .build();
     }
 

@@ -1,4 +1,4 @@
-package com.example.itDa.service;
+package com.example.itDa.service.user;
 
 import com.example.itDa.domain.model.User;
 import com.example.itDa.domain.repository.UserRepository;

@@ -38,7 +38,7 @@ public class User {
     private Long kakaoId;
 
     @Column
-    private String profileImage;
+    private String profileImg;
 
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)

@@ -2,7 +2,7 @@ package com.example.itDa.controller;
 
 import com.example.itDa.infra.global.dto.ResponseDto;
 import com.example.itDa.infra.security.UserDetailsImpl;
-import com.example.itDa.service.UserService;
+import com.example.itDa.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

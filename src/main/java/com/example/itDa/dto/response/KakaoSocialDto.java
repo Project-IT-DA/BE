@@ -14,5 +14,5 @@ public class KakaoSocialDto {
     private Long kakaoId; // email
     private String email;
     private String nickname;
-    private String profileImage;
+    private String profileImg;
 }
