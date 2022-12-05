@@ -26,7 +26,6 @@ public final class JwtTokenUtils {
 
     public static final String CLAIM_EXPIRED_DATE = "EXPIRED_DATE";
     public static final String CLAIM_USER_NAME = "USER_NAME";
-
     public static final String CLAIM_USER_NICKNAME="NICKNAME";
 
 
