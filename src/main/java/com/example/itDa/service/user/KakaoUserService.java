@@ -42,8 +42,8 @@ public class KakaoUserService {
     @Value("${kakao.login.client-id}")
     private String CLIENT_ID;
 
-    @Value("${kakao.login.redirect-url}")
-    private String REDIRECT_URL;
+    @Value("${kakao.login.redirect-uri}")
+    private String REDIRECT_URI;
 
 
     private final UserRepository userRepository;
@@ -118,7 +118,7 @@ public class KakaoUserService {
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "authorization_code");
         body.add("client_id", CLIENT_ID);
-        body.add("redirect_uri", REDIRECT_URL);
+        body.add("redirect_uri", REDIRECT_URI);
         body.add("code", code);
 
         // HTTP 요청 보내기
