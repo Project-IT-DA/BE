@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class LoginDto {
     // 프론트랑 통신
-    private String nickname;
+    private String username;
     private String email;
     private String profileImg;
 }
