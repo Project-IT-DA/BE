@@ -37,7 +37,7 @@ public final class JwtTokenUtils {
         try{
             token= JWT.create()
                     .withIssuer("ISS")
-                    .withClaim(CLAIM_USER_NICKNAME,userDetails.getUser().getNickname())
+                    .withClaim(CLAIM_USER_NICKNAME,userDetails.getUser().getEmail())
                     .withClaim(CLAIM_USER_NAME,userDetails.getUsername())
                     .withClaim(CLAIM_EXPIRED_DATE,new Date(System.currentTimeMillis() + JWT_TOKEN_VALID_MILLI_SEC))
                     .sign(generateAlgorithm());
