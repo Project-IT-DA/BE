@@ -39,7 +39,7 @@ public class CommunityService {
     @Transactional
     public ResponseDto<?> createCommunity(UserDetailsImpl userDetails, MultipartFile[] multipartFiles, CommunityRequestDto requestDto) {
 
-        User user = userRepository.findByEmail(userDetails.getUsername()).orElseThrow(
+        User user = userRepository.findByEmail(userDetails.getUser().getEmail()).orElseThrow(
                 () -> new RequestException(ErrorCode.USER_NOT_EXIST)
         );
 
@@ -57,6 +57,7 @@ public class CommunityService {
         } catch (IOException e){
             throw new RuntimeException();
         }
+
         List<String> imgNames = new ArrayList<>();
         List<CommunityFile> communityFiles = new ArrayList<>();
 
@@ -123,8 +124,12 @@ public class CommunityService {
 
         List<Comment> commentList = commentRepository.findAllByCommunity(community);
         List<CommentResponseDto> commentResponseDtoList = new ArrayList<>();
-        List<CommunityFile> communityFileList = communityFileRepository.findAllByCommunityId(commuId);
         for (Comment comment : commentList) {
+            List<String> imgUrls = new ArrayList<>();
+            List<CommunityFile> communityFile = communityFileRepository.findAllByCommunityId(community.getId());
+            for (int i = 0; i < communityFile.size(); i++) {
+                imgUrls.add(communityFile.get(i).getImgUrl());
+            }
             commentResponseDtoList.add(
                     CommentResponseDto.builder()
                             .commentId(comment.getId())
@@ -145,7 +150,7 @@ public class CommunityService {
 
     @Transactional
     public ResponseDto<?> updateCommunity(Long commuId, UserDetailsImpl userDetails, CommunityRequestDto requestDto) {
-        User user = userRepository.findByEmail(userDetails.getUsername()).orElseThrow(
+        User user = userRepository.findByEmail(userDetails.getUser().getEmail()).orElseThrow(
                 () -> new RequestException(ErrorCode.USER_NOT_EXIST)
         );
 
@@ -161,7 +166,7 @@ public class CommunityService {
 
 
         public ResponseDto<?> deleteCommunity (Long commuId, UserDetailsImpl userDetails) {
-            User user = userRepository.findByEmail(userDetails.getUsername()).orElseThrow(
+            User user = userRepository.findByEmail(userDetails.getUser().getEmail()).orElseThrow(
                     () -> new RequestException(ErrorCode.USER_NOT_EXIST)
             );
 
