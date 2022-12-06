@@ -16,7 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 public class ProfileResponseDto {
     private String email;
-    private String nickname;
+    private String username;
     private String createdAt;
     private String profileImge;
     private List<Article> articles;
@@ -26,7 +26,7 @@ public class ProfileResponseDto {
     public static ProfileResponseDto of(UserDetailsImpl userDetails) {
         return ProfileResponseDto.builder()
                 .email(userDetails.getUser().getEmail())
-                .nickname(userDetails.getUser().getUsername())
+                .username(userDetails.getUser().getUsername())
                 .createdAt(userDetails.getUser().getCreatedAt())
                 .profileImge(userDetails.getUser().getProfileImg())
                 .build();

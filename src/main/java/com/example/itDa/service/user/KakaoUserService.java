@@ -93,7 +93,7 @@ public class KakaoUserService {
             String password = UUID.randomUUID().toString();
 
             kakaoUser = User.builder()
-                    .kakaoId(kakaoSocialDto.getKakaoId())
+                    .socialId(kakaoSocialDto.getKakaoId())
                     .username(kakaoSocialDto.getUsername())
                     .password(encoder.encode(password))
                     .email(kakaoSocialDto.getEmail())
@@ -167,7 +167,7 @@ public class KakaoUserService {
 
         Long kakaoId = jsonNode.get("id").asLong();
 
-        String nickname = jsonNode
+        String username = jsonNode
                 .get("properties")
                 .get("nickname").asText();
 
@@ -182,7 +182,7 @@ public class KakaoUserService {
         return KakaoSocialDto.builder()
                 .kakaoId(kakaoId)
                 .email(email)
-                .username(nickname)
+                .username(username)
                 .profileImg(profileImg)
                 .build();
     }
@@ -196,7 +196,7 @@ public class KakaoUserService {
 
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("target_id_type", "user_id");
-        body.add("target_id", user.getKakaoId().toString());
+        body.add("target_id", user.getSocialId().toString());
 
         HttpEntity<MultiValueMap<String, String>> kakaoUserInfoRequest = new HttpEntity<>(body, headers);
         RestTemplate rt = new RestTemplate();
