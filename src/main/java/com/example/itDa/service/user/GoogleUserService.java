@@ -3,7 +3,7 @@ package com.example.itDa.service.user;
 import com.example.itDa.domain.model.User;
 import com.example.itDa.domain.model.UserSocialEnum;
 import com.example.itDa.domain.repository.UserRepository;
-import com.example.itDa.dto.response.KakaoSocialDto;
+import com.example.itDa.dto.response.GoogleSocialDto;
 import com.example.itDa.dto.response.LoginDto;
 import com.example.itDa.infra.global.dto.ResponseDto;
 import com.example.itDa.infra.security.UserDetailsImpl;
@@ -31,77 +31,82 @@ import java.util.UUID;
 
 import static com.example.itDa.infra.security.handler.AuthenticationSuccessHandler.AUTH_HEADER;
 import static com.example.itDa.infra.security.handler.AuthenticationSuccessHandler.TOKEN_TYPE;
+
 @Slf4j
 @Transactional
 @RequiredArgsConstructor
 @Service
-public class KakaoUserService {
-    @Value("${kakao.login.client-id}")
+public class GoogleUserService {
+    @Value("${google.login.client-id}")
     private String CLIENT_ID;
 
-    @Value("${kakao.login.redirect-uri}")
+    @Value("${google.login.client-secret}")
+    private String CLIENT_SECRET;
+
+    @Value("${google.login.redirect-uri}")
     private String REDIRECT_URI;
 
 
     private final UserRepository userRepository;
+
     private final BCryptPasswordEncoder encoder;
 
-    //카카오로그인
-    public ResponseDto<LoginDto> kakaoLogin(String code, HttpServletResponse response) throws IOException {
+    //구글 로그인
+    public ResponseDto<LoginDto> googleLogin(String code, HttpServletResponse response) throws IOException {
 
         // 1. "인가 코드"로 "액세스 토큰" 요청
         String accessToken = getAccessToken(code);
 
-        // 2. "액세스 토큰"으로 "카카오 사용자 정보" 가져오기
-        KakaoSocialDto kakaoSocialDto = getKakaoUserInfo(accessToken);
+        // 2. "액세스 토큰"으로 "구글 사용자 정보" 가져오기
+        GoogleSocialDto googleSocialDto = getGoogleUserInfo(accessToken);
 
         // 3. 필요시에 회원가입
-        User kakaoUser = registerKakaoUser(kakaoSocialDto);
+        User googleUser = registerGoogleUser(googleSocialDto);
 
         // 4. 토큰 발급
-        kakaoLoginAccess(kakaoUser, response);
+        googleLoginAccess(googleUser, response);
 
 
         return ResponseDto.success(
                 LoginDto.builder()
-                        .nickname(kakaoUser.getNickname())
-                        .email(kakaoUser.getEmail())
-                        .profileImg(kakaoUser.getProfileImg())
+                        .nickname(googleUser.getNickname())
+                        .email(googleUser.getEmail())
+                        .profileImg(googleUser.getProfileImg())
                         .build()
         );
 
     }
 
-    private void kakaoLoginAccess(User kakaoUser, HttpServletResponse response) {
+    private void googleLoginAccess(User googleUser, HttpServletResponse response) {
 
-        UserDetailsImpl userDetails = new UserDetailsImpl(kakaoUser);
+        UserDetailsImpl userDetails = new UserDetailsImpl(googleUser);
         String token = JwtTokenUtils.generateJwtToken(userDetails);
         response.addHeader(AUTH_HEADER, TOKEN_TYPE + " " + token);
 
     }
 
-    private User registerKakaoUser(KakaoSocialDto kakaoSocialDto) {
+    private User registerGoogleUser(GoogleSocialDto googleSocialDto) {
 
         // User 정보있는지 확인
-        User kakaoUser = userRepository.findByEmail(kakaoSocialDto.getEmail()).orElse(null);
+        User googleUser = userRepository.findByEmail(googleSocialDto.getEmail()).orElse(null);
 
         // User 정보가 없으면 회원가입 시키기
-        if (kakaoUser == null) {
+        if (googleUser == null) {
             String password = UUID.randomUUID().toString();
 
-            kakaoUser = User.builder()
-                    .socialId(kakaoSocialDto.getKakaoId())
-                    .nickname(kakaoSocialDto.getNickname())
+            googleUser = User.builder()
+                    .socialId(googleSocialDto.getGoogleId())
+                    .nickname(googleSocialDto.getNickname())
                     .password(encoder.encode(password))
-                    .email(kakaoSocialDto.getEmail())
-                    .social(UserSocialEnum.KAKAO)
-                    .profileImg(kakaoSocialDto.getProfileImg())
+                    .email(googleSocialDto.getEmail())
+                    .social(UserSocialEnum.GOOGLE)
+                    .profileImg(googleSocialDto.getProfileImg())
                     .build();
 
-            userRepository.save(kakaoUser);
+            userRepository.save(googleUser);
         }
 
-        return kakaoUser;
+        return googleUser;
 
     }
 
@@ -115,17 +120,18 @@ public class KakaoUserService {
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "authorization_code");
         body.add("client_id", CLIENT_ID);
+        body.add("client_secret", CLIENT_SECRET);
         body.add("redirect_uri", REDIRECT_URI);
         body.add("code", code);
 
         // HTTP 요청 보내기
-        HttpEntity<MultiValueMap<String, String>> kakaoTokenRequest =
+        HttpEntity<MultiValueMap<String, String>> googleTokenRequest =
                 new HttpEntity<>(body, headers);
         RestTemplate rt = new RestTemplate();
         ResponseEntity<String> response = rt.exchange(
-                "https://kauth.kakao.com/oauth/token",
+                "https://oauth2.googleapis.com/token",
                 HttpMethod.POST,
-                kakaoTokenRequest,
+                googleTokenRequest,
                 String.class
         );
 
@@ -138,19 +144,19 @@ public class KakaoUserService {
         return jsonNode.get("access_token").asText();
     }
 
-    private KakaoSocialDto getKakaoUserInfo(String accessToken) throws IOException {
+    private GoogleSocialDto getGoogleUserInfo(String accessToken) throws IOException {
         // HTTP Header 생성
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer " + accessToken);
         headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
 
-        // HTTP 요청 보내기 -> 카카오한테 보내는거
-        HttpEntity<MultiValueMap<String, String>> kakaoUserInfoRequest = new HttpEntity<>(headers);
+        // HTTP 요청 보내기 -> 구글한테 보내는거
+        HttpEntity<MultiValueMap<String, String>> googleUserInfoRequest = new HttpEntity<>(headers);
         RestTemplate rt = new RestTemplate();
         ResponseEntity<String> response = rt.exchange(
-                "https://kapi.kakao.com/v2/user/me",
+                "https://accounts.google.com/o/oauth2/v2/auth",
                 HttpMethod.GET,
-                kakaoUserInfoRequest,
+                googleUserInfoRequest,
                 String.class
         );
         // rt.exchange하면 response에 밑에 것들이 들어간다.
@@ -162,22 +168,22 @@ public class KakaoUserService {
         JsonNode jsonNode = objectMapper
                 .readTree(responseBody);
 
-        Long kakaoId = jsonNode.get("id").asLong();
+        Long googleId = jsonNode.get("sub").asLong();
 
         String nickname = jsonNode
-                .get("properties")
-                .get("nickname").asText();
+                .get("userinfo")
+                .get("name").asText();
 
         String profileImg = jsonNode
-                .get("properties")
-                .get("profile_image").asText();
+                .get("userinfo")
+                .get("picture").asText();
 
         String email = jsonNode
-                .get("kakao_account")
+                .get("userinfo")
                 .get("email").asText();
 
-        return KakaoSocialDto.builder()
-                .kakaoId(kakaoId)
+        return GoogleSocialDto.builder()
+                .googleId(googleId)
                 .email(email)
                 .nickname(nickname)
                 .profileImg(profileImg)

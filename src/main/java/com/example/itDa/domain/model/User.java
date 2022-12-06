@@ -35,7 +35,7 @@ public class User {
     private int density;
 
     @Column
-    private Long kakaoId;
+    private Long socialId;
 
     @Column
     private String profileImg;

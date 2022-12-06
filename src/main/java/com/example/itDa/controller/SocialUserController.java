@@ -2,6 +2,7 @@ package com.example.itDa.controller;
 
 import com.example.itDa.dto.response.LoginDto;
 import com.example.itDa.infra.global.dto.ResponseDto;
+import com.example.itDa.service.user.GoogleUserService;
 import com.example.itDa.service.user.KakaoUserService;
 import com.example.itDa.service.user.UserService;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +19,7 @@ import java.io.IOException;
 @RestController
 public class SocialUserController {
 
-//    private final GoogleUserService googleUserService;
+    private final GoogleUserService googleUserService;
     private final KakaoUserService kakaoUserService;
     private final UserService userService;
 
@@ -27,8 +28,8 @@ public class SocialUserController {
         return kakaoUserService.kakaoLogin(code, response);
     }
 
-//    @GetMapping("/users/google/callback")
-//    public ResponseDto<LoginDto> googleLogin(@RequestParam String code, HttpServletResponse response) throws IOException {
-//        return socialUserService.googleLogin(code, response);
-//    }
+    @GetMapping("/users/google/callback")
+    public ResponseDto<LoginDto> googleLogin(@RequestParam String code, HttpServletResponse response) throws IOException {
+        return googleUserService.googleLogin(code, response);
+    }
 }

@@ -24,10 +24,4 @@ public class UserController {
         return userService.getUserProfile(userDetails);
     }
 
-    @DeleteMapping("/api/members/signout")
-    public ResponseDto<Boolean> signOutMember(@AuthenticationPrincipal UserDetailsImpl userDetails){
-
-        return  userService.signOut(userDetails.getUser());
-
-    }
 }
