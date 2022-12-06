@@ -13,6 +13,6 @@ public class KakaoSocialDto {
 // 카카오서버랑 통신
     private Long kakaoId; // email
     private String email;
-    private String nickname;
+    private String username;
     private String profileImg;
 }

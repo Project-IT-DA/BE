@@ -13,6 +13,6 @@ public class GoogleSocialDto {
         // 구글서버랑 통신
         private Long googleId; // email
         private String email;
-        private String nickname;
+        private String username;
         private String profileImg;
 }

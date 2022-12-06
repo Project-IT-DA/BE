@@ -60,7 +60,7 @@ public class GoogleUserService {
         // 2. "액세스 토큰"으로 "구글 사용자 정보" 가져오기
         GoogleSocialDto googleSocialDto = getGoogleUserInfo(accessToken);
 
-        // 3. 필요시에 회원가입
+        // 3. 필요시에 회원가입 -> IMPL userdetails 객체가 되어라
         User googleUser = registerGoogleUser(googleSocialDto);
 
         // 4. 토큰 발급
@@ -69,7 +69,7 @@ public class GoogleUserService {
 
         return ResponseDto.success(
                 LoginDto.builder()
-                        .nickname(googleUser.getNickname())
+                        .username(googleUser.getUsername())
                         .email(googleUser.getEmail())
                         .profileImg(googleUser.getProfileImg())
                         .build()
@@ -96,7 +96,7 @@ public class GoogleUserService {
 
             googleUser = User.builder()
                     .socialId(googleSocialDto.getGoogleId())
-                    .nickname(googleSocialDto.getNickname())
+                    .username(googleSocialDto.getUsername())
                     .password(encoder.encode(password))
                     .email(googleSocialDto.getEmail())
                     .social(UserSocialEnum.GOOGLE)
@@ -150,11 +150,11 @@ public class GoogleUserService {
         headers.add("Authorization", "Bearer " + accessToken);
         headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
 
-        // HTTP 요청 보내기 -> 구글한테 보내는거
+        // HTTP 요청 보내기 -> 구글한테 보내는거 액세스 토큰을 보내줘야함 그래서 유저정보를 받아와서 IMPL에 넣어서 객체로 만들어서 씀
         HttpEntity<MultiValueMap<String, String>> googleUserInfoRequest = new HttpEntity<>(headers);
         RestTemplate rt = new RestTemplate();
         ResponseEntity<String> response = rt.exchange(
-                "https://accounts.google.com/o/oauth2/v2/auth",
+                "https://oauth2.googleapis.com/token",
                 HttpMethod.GET,
                 googleUserInfoRequest,
                 String.class
@@ -170,7 +170,7 @@ public class GoogleUserService {
 
         Long googleId = jsonNode.get("sub").asLong();
 
-        String nickname = jsonNode
+        String username = jsonNode
                 .get("userinfo")
                 .get("name").asText();
 
@@ -185,7 +185,7 @@ public class GoogleUserService {
         return GoogleSocialDto.builder()
                 .googleId(googleId)
                 .email(email)
-                .nickname(nickname)
+                .username(username)
                 .profileImg(profileImg)
                 .build();
     }
