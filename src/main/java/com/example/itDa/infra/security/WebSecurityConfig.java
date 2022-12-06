@@ -65,7 +65,9 @@ public class WebSecurityConfig {
                         "/h2-console/**",
                         "/stomp/chat/**",
                         "/actuator/**",
-                        "/community/**"
+                        "/api/articles/**",
+                        "/users/**"
+
         );
 
     }
@@ -136,8 +138,8 @@ public class WebSecurityConfig {
         // 회원 관리 API SKIP 적용
         skipPathList.add("POST,/api/users/signup");
         skipPathList.add("POST,/api/users/email");
-        skipPathList.add("GET,/user/kakao/callback/**");
-        skipPathList.add("GET,/user/google/callback/**");
+        skipPathList.add("GET,/users/kakao/callback/**");
+        skipPathList.add("GET,/users/google/callback/**");
 
 
         //WebSocket 관련 -> Filter 역할 Intercepter로 대신함.

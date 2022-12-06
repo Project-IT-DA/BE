@@ -7,8 +7,6 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -36,13 +34,14 @@ public class User {
     @Column
     private int density;
 
-    @OneToMany(mappedBy = "user")
-    private List<Community> communityList = new ArrayList<Community>();
+    @Column
+    private Long kakaoId;
 
-    @OneToMany(mappedBy = "user")
-    private List<Comment> commentList = new ArrayList<Comment>();
+    @Column
+    private String profileImg;
 
-    @Enumerated(EnumType.STRING)
-    private LoginType loginType;
+    @Column(nullable = false)
+    @Enumerated(value = EnumType.STRING)
+    private UserSocialEnum social;
 
 }
