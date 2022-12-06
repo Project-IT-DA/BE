@@ -67,7 +67,7 @@ public class KakaoUserService {
 
         return ResponseDto.success(
                 LoginDto.builder()
-                        .nickname(kakaoUser.getNickname())
+                        .nickname(kakaoUser.getUsername())
                         .email(kakaoUser.getEmail())
                         .profileImg(kakaoUser.getProfileImg())
                         .build()
@@ -94,7 +94,7 @@ public class KakaoUserService {
 
             kakaoUser = User.builder()
                     .kakaoId(kakaoSocialDto.getKakaoId())
-                    .nickname(kakaoSocialDto.getNickname())
+                    .username(kakaoSocialDto.getNickname())
                     .password(encoder.encode(password))
                     .email(kakaoSocialDto.getEmail())
                     .social(UserSocialEnum.KAKAO)
