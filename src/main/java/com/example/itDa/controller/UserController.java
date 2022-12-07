@@ -17,10 +17,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class UserController {
     private final UserService userService;
 
-    // 마이페이지
+    // 마이페이지 조회, 수정
     @GetMapping("/api/users/profile")
     public ResponseEntity<?> getUserProfile(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-
         return userService.getUserProfile(userDetails);
     }
 
