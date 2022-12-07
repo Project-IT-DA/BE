@@ -2,6 +2,7 @@ package com.example.itDa.domain.article;
 
 import com.example.itDa.domain.Category;
 import com.example.itDa.domain.Status;
+import com.example.itDa.domain.TimeStamped;
 import com.example.itDa.domain.article.request.EditArticleRequestDto;
 import com.example.itDa.domain.model.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -15,17 +16,12 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Article {
+public class Article extends TimeStamped {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
-    private LocalDateTime createdAt;
-
-    @Column
-    private LocalDateTime updatedAt;
 
     @Column(nullable = false)
     private String articleName;

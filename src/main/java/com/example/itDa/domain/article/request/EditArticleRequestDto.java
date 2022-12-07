@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -14,5 +16,7 @@ public class EditArticleRequestDto {
     private String substance;
     private String location;
     private int sellPrice;
+    private List<String> fileName;
+    private List<String> fileUrl;
     private Category category;
 }

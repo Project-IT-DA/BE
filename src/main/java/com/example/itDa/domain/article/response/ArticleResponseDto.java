@@ -17,8 +17,9 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ArticleResponseDto {
-
-    private Long id;
+    private Long userId;
+    private String username;
+    private Long articleId;
     private String articleName;
     private String substance;
 
@@ -32,38 +33,5 @@ public class ArticleResponseDto {
     private List<String> fileName;
     private List<String> fileUrl;
 
-    public ArticleResponseDto(Article article) {
-        this.id = article.getId();
-        this.articleName = article.getArticleName();
-        this.sellPrice = article.getSellPrice();
-        this.category = article.getCategory();
-        this.status = article.getStatus();
-        this.location = article.getLocation();
-    }
 
-
-//    public static ArticleResponseDto from(Article article,List<ArticleFile> articleFiles) {
-//        return ArticleResponseDto.builder()
-//                .id(article.getId())
-//                .articleName(article.getArticleName())
-//                .substance(article.getSubstance())
-//                .category(article.getCategory())
-//                .status(article.getStatus())
-//                .location(article.getLocation())
-//                .sellPrice(article.getSellPrice())
-//                .fileName(articleFiles.get)
-//                .fileUrl(Collections.singletonList(articleFiles.getFileUrl()))
-//                .build();
-//    }
-
-    public static ArticleResponseDto viewAll(Article article) {
-        return ArticleResponseDto.builder()
-                .id(article.getId())
-                .articleName(article.getArticleName())
-                .sellPrice(article.getSellPrice())
-                .category(article.getCategory())
-                .status(article.getStatus())
-                .location(article.getLocation())
-                .build();
-    }
 }

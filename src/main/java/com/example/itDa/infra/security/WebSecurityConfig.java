@@ -140,6 +140,8 @@ public class WebSecurityConfig {
         skipPathList.add("GET,/users/kakao/callback/**");
         skipPathList.add("GET,/users/google/callback/**");
 
+        // 거래글 관리 API SKIP 적용
+        skipPathList.add("GET,/api/articles/**");
 
         //WebSocket 관련 -> Filter 역할 Intercepter로 대신함.
         skipPathList.add("GET,/stomp/chat/**");

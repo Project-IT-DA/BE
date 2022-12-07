@@ -77,7 +77,7 @@ public class ArticleService {
         List<String> fileNames = new ArrayList<>();
 
         List<ArticleFile> articleFiles = new ArrayList<>();
-        for (int i = 0; i < articleFiles.size(); i++) {
+        for (int i = 0; i < fileUrls.size(); i++) {
 
             fileNames.add(multipartFiles[i].getOriginalFilename());
             articleFiles.add(ArticleFile.builder()
@@ -88,7 +88,9 @@ public class ArticleService {
         }
         articleFileRepository.saveAll(articleFiles);
         ArticleResponseDto articleResponseDto = ArticleResponseDto.builder()
-                .id(article.getId())
+                .userId(user.getId())
+                .username(user.getUsername())
+                .articleId(article.getId())
                 .articleName(article.getArticleName())
                 .substance(article.getSubstance())
                 .category(article.getCategory())
@@ -107,8 +109,15 @@ public class ArticleService {
         List<Article> articleList = articleRepository.findAllByOrderByCreatedAtDesc();
         List<ViewAllArticleResponseDto> responses = new ArrayList<>();
 
-        for (int i = 0; i < articleList.size(); i++) {
-            Article article = articleList.get(i);
+
+        for (Article article : articleList) {
+            List<ArticleFile> articleFiles = articleFileRepository.findAllByArticleId(article.getId());
+            List<String> fileNames = new ArrayList<>();
+            List<String> fileUrls = new ArrayList<>();
+            for (ArticleFile articleFile : articleFiles) {
+               fileNames.add(articleFile.getFileName());
+               fileUrls.add(articleFile.getFileUrl());
+            }
             ViewAllArticleResponseDto viewAllArticleResponseDto = ViewAllArticleResponseDto.builder()
                     .id(article.getId())
                     .articleName(article.getArticleName())
@@ -116,24 +125,35 @@ public class ArticleService {
                     .category(article.getCategory())
                     .status(article.getStatus())
                     .location(article.getLocation())
-//                    .fileName(fileNames)
-//                    .fileUrl(fileUrls)
+                    .fileName(fileNames)
+                    .fileUrl(fileUrls)
                     .createdAt(article.getCreatedAt())
                     .updatedAt(article.getUpdatedAt())
                     .build();
             responses.add(viewAllArticleResponseDto);
         }
+
+
         return ResponseDto.success(responses);
-
-
     }
+
 
     // 거래글 단일 조회
     public ResponseDto<ArticleResponseDto> viewArticle(Long articleId) {
+
         Article article = getArticle(articleId);
 
+
+        List<ArticleFile> articleFiles = articleFileRepository.findAllByArticleId(articleId);
+        List<String> fileNames = new ArrayList<>();
+        List<String> fileUrls = new ArrayList<>();
+        for (int i = 0; i < articleFiles.size(); i++) {
+            fileNames.add(articleFiles.get(i).getFileName());
+            fileUrls.add(articleFiles.get(i).getFileUrl());
+        }
+
         ArticleResponseDto articleResponseDto = ArticleResponseDto.builder()
-                .id(article.getId())
+                .articleId(article.getId())
                 .articleName(article.getArticleName())
                 .substance(article.getSubstance())
                 .category(article.getCategory())
@@ -142,9 +162,8 @@ public class ArticleService {
                 .createdAt(article.getCreatedAt())
                 .updatedAt(article.getUpdatedAt())
                 .sellPrice(article.getSellPrice())
-
-//                .fileName(fileNames)
-//                .fileUrl(fileUrls)
+                .fileName(fileNames)
+                .fileUrl(fileUrls)
                 .build();
 
         return ResponseDto.success(articleResponseDto);
@@ -155,23 +174,27 @@ public class ArticleService {
     public ResponseDto<?> editArticle(UserDetailsImpl userDetails, Long articleId, EditArticleRequestDto editRequestDto) {
 
         User user = userRepository.findByEmail(userDetails.getUser().getEmail()).orElseThrow(
-                ()-> new RequestException(ErrorCode.NO_PERMISSION_TO_WRITE_NOTICE_400)
+                () -> new RequestException(ErrorCode.NO_PERMISSION_TO_WRITE_NOTICE_400)
         );
 
         Article article = getArticle(articleId);
 
-        if(!user.equals(article.getUser())){
+        if (!user.equals(article.getUser())) {
             throw new RequestException(ErrorCode.NO_PERMISSION_TO_MODIFY_NOTICE_400);
         }
 
         article.update(editRequestDto);
 
         EditArticleResponseDto editArticleResponseDto = EditArticleResponseDto.builder()
-                .articleName(editRequestDto.getArticleName())
-                .substance(editRequestDto.getSubstance())
-                .location(editRequestDto.getLocation())
-                .sellPrice(editRequestDto.getSellPrice())
-                .category(editRequestDto.getCategory())
+                .articleId(article.getId())
+                .articleName(article.getArticleName())
+                .substance(article.getSubstance())
+                .location(article.getLocation())
+                .sellPrice(article.getSellPrice())
+                .category(article.getCategory())
+//                .fileName(fileNames)
+//                .fileUrl(fileUrls)
+                .updatedAt(article.getUpdatedAt())
                 .build();
         return ResponseDto.success(editArticleResponseDto);
     }
@@ -180,12 +203,12 @@ public class ArticleService {
     public ResponseDto<?> deleteArticle(UserDetailsImpl userDetails, Long articleId) {
 
         User user = userRepository.findByEmail(userDetails.getUser().getEmail()).orElseThrow(
-                ()-> new RequestException(ErrorCode.USER_NOT_EXIST)
+                () -> new RequestException(ErrorCode.USER_NOT_EXIST)
         );
 
         Article article = getArticle(articleId);
 
-        if(!user.equals(article.getUser())){
+        if (!user.equals(article.getUser())) {
             throw new RequestException(ErrorCode.NO_PERMISSION_TO_MODIFY_NOTICE_400);
         }
 
