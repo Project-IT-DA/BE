@@ -14,9 +14,11 @@ import java.util.List;
 public class CommunityResponseDto {
 
     private Long commuId;
+    private Long userId;
     private String title;
     private String content;
-    private String imgUrl;
     private List<CommentResponseDto> comments;
+    private List<String> imgNames;
+    private List<String> imgUrls;
 
 }
