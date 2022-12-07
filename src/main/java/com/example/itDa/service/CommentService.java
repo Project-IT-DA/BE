@@ -27,19 +27,21 @@ public class CommentService {
     private final UserRepository userRepository;
     @Transactional
     public ResponseDto<?> createComment(UserDetailsImpl userDetails, CommentRequestDto requestDto) {
-        User user = userRepository.findByEmail(userDetails.getUsername()).orElseThrow(
+        User user = userRepository.findByEmail(userDetails.getUser().getEmail()).orElseThrow(
                 () -> new RequestException(ErrorCode.USER_NOT_EXIST)
         );
         Community community = communityService.isPresentCommunity(requestDto.getCommuId());
 
         Comment comment = Comment.builder()
                 .community(community)
+                .user(user)
                 .content(requestDto.getContent())
                 .build();
 
         commentRepository.save(comment);
         CommentResponseDto commentResponseDto = CommentResponseDto.builder()
                 .commentId(comment.getId())
+                .userId(user.getId())
                 .content(comment.getContent())
                 .build();
 
@@ -49,10 +51,14 @@ public class CommentService {
 
     @Transactional
     public ResponseDto<?> updateComment(UserDetailsImpl userDetails, Long commentId, CommentRequestDto requestDto) {
-        User user = userRepository.findByEmail(userDetails.getUsername()).orElseThrow(
+        User user = userRepository.findByEmail(userDetails.getUser().getEmail()).orElseThrow(
                 () -> new RequestException(ErrorCode.USER_NOT_EXIST)
         );
         Community community = communityService.isPresentCommunity(requestDto.getCommuId());
+
+        if(!user.getEmail().equals(community.getUser().getEmail())){
+            return ResponseDto.fail("NO_PERMISSION_TO_MODIFY_NOTICE_400","수정 권한이 없습니다.");
+        }
 
         Comment comment = isPresentComment(commentId);
         if (comment == null) {
@@ -71,7 +77,7 @@ public class CommentService {
             return ResponseDto.fail("COMMENT_NOT_FOUND_404", "해당 코멘트가 존재하지 않습니다.");
         }
 
-        if (comment.getUser().getEmail().equals(userDetails.getUsername())){
+        if (comment.getUser().getEmail().equals(userDetails.getUser().getEmail())){
             commentRepository.delete(comment);
         } else {
             return ResponseDto.fail("NO_PERMISSION_TO_DELETE_NOTICE_400","삭제 권한이 없습니다.");

@@ -138,7 +138,7 @@ public class CommunityService {
             commentResponseDtoList.add(
                     CommentResponseDto.builder()
                             .commentId(comment.getId())
-                            .content(community.getContent())
+                            .content(comment.getContent())
                             .build());
         }
 
