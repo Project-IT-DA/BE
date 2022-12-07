@@ -23,9 +23,10 @@ public class ArticleController {
 
     @PostMapping("api/articles")
     public ResponseDto<ArticleResponseDto> registerArticle(@RequestPart(value = "data")ArticleRequestDto requestDto,
-                                                           @RequestPart(value = "file", required = false) MultipartFile[] multipartFiles){
-        ArticleResponseDto articleResponseDto = articleService.registerArticle(requestDto, multipartFiles);
-        return ResponseDto.success(articleResponseDto);
+                                                           @RequestPart(value = "file", required = false) MultipartFile[] multipartFiles,
+                                                           @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return articleService.registerArticle(requestDto, multipartFiles, userDetails);
+
     }
 
     @GetMapping("api/articles")
@@ -39,12 +40,12 @@ public class ArticleController {
     }
 
     @PutMapping("api/articles/{articleId}")
-    public ResponseDto<EditArticleResponseDto> editArticle(@PathVariable Long articleId , @RequestBody EditArticleRequestDto editRequestDto){
-        EditArticleResponseDto editArticleResponseDto = articleService.editArticle(articleId,editRequestDto);
-        return ResponseDto.success(editArticleResponseDto);
+    public ResponseDto<?> editArticle(@AuthenticationPrincipal UserDetailsImpl userDetails,@PathVariable Long articleId , @RequestBody EditArticleRequestDto editRequestDto){
+        return articleService.editArticle(userDetails,articleId,editRequestDto);
+
     }
     @DeleteMapping("api/articles/{articleId}")
-    public ResponseDto<String> deleteArticle(@PathVariable Long articleId){
-        return ResponseDto.success(articleService.deleteArticle(articleId));
+    public ResponseDto<?> deleteArticle(@PathVariable Long articleId,@AuthenticationPrincipal UserDetailsImpl userDetails){
+        return articleService.deleteArticle(userDetails,articleId);
     }
 }

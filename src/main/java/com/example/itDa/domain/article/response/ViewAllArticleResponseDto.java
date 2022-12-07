@@ -12,17 +12,21 @@ import java.util.List;
 
 @Getter
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
-public class EditArticleResponseDto {
-    private Long articleId;
+@AllArgsConstructor
+public class ViewAllArticleResponseDto {
+
+    private Long id;
     private String articleName;
     private String substance;
+
     private Category category;
     private Status status;
     private String location;
+    private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private int sellPrice;
+
     private List<String> fileName;
     private List<String> fileUrl;
 }

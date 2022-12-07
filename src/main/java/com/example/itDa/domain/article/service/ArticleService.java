@@ -1,5 +1,6 @@
 package com.example.itDa.domain.article.service;
 
+import com.example.itDa.domain.Status;
 import com.example.itDa.domain.article.Article;
 import com.example.itDa.domain.article.ArticleFile;
 import com.example.itDa.domain.article.repository.ArticleRepository;
@@ -7,6 +8,7 @@ import com.example.itDa.domain.article.request.ArticleRequestDto;
 import com.example.itDa.domain.article.request.EditArticleRequestDto;
 import com.example.itDa.domain.article.response.ArticleResponseDto;
 import com.example.itDa.domain.article.response.EditArticleResponseDto;
+import com.example.itDa.domain.article.response.ViewAllArticleResponseDto;
 import com.example.itDa.domain.model.User;
 import com.example.itDa.domain.repository.ArticleFileRepository;
 import com.example.itDa.domain.repository.UserRepository;
@@ -14,6 +16,7 @@ import com.example.itDa.infra.global.dto.ResponseDto;
 import com.example.itDa.infra.global.exception.ErrorCode;
 import com.example.itDa.infra.global.exception.RequestException;
 import com.example.itDa.infra.s3.S3UploaderService;
+import com.example.itDa.infra.security.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,7 +36,6 @@ public class ArticleService {
     private final ArticleFileRepository articleFileRepository;
 
 
-
     @Autowired
     public ArticleService(ArticleRepository articleRepository, UserRepository userRepository, S3UploaderService s3UploaderService, ArticleFileRepository articleFileRepository) {
         this.articleRepository = articleRepository;
@@ -44,19 +46,27 @@ public class ArticleService {
 
     //거래글 작성
     @Transactional
-    public ArticleResponseDto registerArticle(ArticleRequestDto requestDto,
-                                              MultipartFile[] multipartFiles) {
-        Article registerArticle = articleRepository.save(
-                Article.builder()
-                        .articleName(requestDto.getArticleName())
-                        .sellPrice(requestDto.getSellPrice())
-                        .substance(requestDto.getSubstance())
-                        .location(requestDto.getLocation())
-                        .category(requestDto.getCategory())
-                        .build()
+    public ResponseDto<ArticleResponseDto> registerArticle(ArticleRequestDto requestDto,
+                                                           MultipartFile[] multipartFiles,
+                                                           UserDetailsImpl userDetails) {
+
+        User user = userRepository.findByEmail(userDetails.getUser().getEmail()).orElseThrow(
+                () -> new RequestException(ErrorCode.USER_NOT_EXIST)
         );
-//        Article article = new Article(registerArticle);
-//        article.updateStatus(Status.SELL);
+        System.out.println(userDetails.getUsername());
+
+        Article article = Article.builder()
+                .user(user)
+                .articleName(requestDto.getArticleName())
+                .sellPrice(requestDto.getSellPrice())
+                .substance(requestDto.getSubstance())
+                .location(requestDto.getLocation())
+                .category(requestDto.getCategory())
+                .build();
+
+        articleRepository.save(article);
+
+
         List<String> fileUrls;
         try {
             fileUrls = s3UploaderService.uploadFormDataFiles(multipartFiles, "upload");
@@ -67,82 +77,151 @@ public class ArticleService {
         List<String> fileNames = new ArrayList<>();
 
         List<ArticleFile> articleFiles = new ArrayList<>();
-        for (int i = 0; i < articleFiles.size(); i++) {
+        for (int i = 0; i < fileUrls.size(); i++) {
 
             fileNames.add(multipartFiles[i].getOriginalFilename());
             articleFiles.add(ArticleFile.builder()
-                    .article(registerArticle)
+                    .article(article)
                     .fileUrl(fileUrls.get(i))
                     .fileName(fileNames.get(i))
                     .build());
         }
         articleFileRepository.saveAll(articleFiles);
-        return ArticleResponseDto.builder()
-                .id(registerArticle.getId())
-                .articleName(registerArticle.getArticleName())
-                .substance(registerArticle.getSubstance())
-                .category(registerArticle.getCategory())
-                .status(registerArticle.getStatus())
-                .location(registerArticle.getLocation())
-                .createdAt(registerArticle.getCreatedAt())
-                .sellPrice(registerArticle.getSellPrice())
+        ArticleResponseDto articleResponseDto = ArticleResponseDto.builder()
+                .userId(user.getId())
+                .username(user.getUsername())
+                .articleId(article.getId())
+                .articleName(article.getArticleName())
+                .substance(article.getSubstance())
+                .category(article.getCategory())
+                .status(Status.SELL)
+                .location(article.getLocation())
+                .createdAt(article.getCreatedAt())
+                .sellPrice(article.getSellPrice())
                 .fileName(fileNames)
                 .fileUrl(fileUrls)
                 .build();
+        return ResponseDto.success(articleResponseDto);
     }
 
+    // 거래글 전체 조회
     public ResponseDto<?> viewAllArticle() {
         List<Article> articleList = articleRepository.findAllByOrderByCreatedAtDesc();
-        List<ArticleResponseDto> responses = new ArrayList<>();
+        List<ViewAllArticleResponseDto> responses = new ArrayList<>();
 
-        for (int i = 0; i < articleList.size(); i++) {
-            Article article = articleList.get(i);
-            ArticleResponseDto articleResponseDto = new ArticleResponseDto(article);
-            responses.add(articleResponseDto);
+
+        for (Article article : articleList) {
+            List<ArticleFile> articleFiles = articleFileRepository.findAllByArticleId(article.getId());
+            List<String> fileNames = new ArrayList<>();
+            List<String> fileUrls = new ArrayList<>();
+            for (ArticleFile articleFile : articleFiles) {
+               fileNames.add(articleFile.getFileName());
+               fileUrls.add(articleFile.getFileUrl());
+            }
+            ViewAllArticleResponseDto viewAllArticleResponseDto = ViewAllArticleResponseDto.builder()
+                    .id(article.getId())
+                    .articleName(article.getArticleName())
+                    .sellPrice(article.getSellPrice())
+                    .category(article.getCategory())
+                    .status(article.getStatus())
+                    .location(article.getLocation())
+                    .fileName(fileNames)
+                    .fileUrl(fileUrls)
+                    .createdAt(article.getCreatedAt())
+                    .updatedAt(article.getUpdatedAt())
+                    .build();
+            responses.add(viewAllArticleResponseDto);
         }
-        return ResponseDto.success(articleList);
 
 
+        return ResponseDto.success(responses);
     }
 
-    public ResponseDto<?> viewArticle(Long articleId) {
+
+    // 거래글 단일 조회
+    public ResponseDto<ArticleResponseDto> viewArticle(Long articleId) {
+
         Article article = getArticle(articleId);
-//                articleRepository.findById(id).orElseThrow((
-//        ) -> new IllegalArgumentException("존재하지 않는 게시글 아이디 입니다."));
-        return ResponseDto.success(article);
+
+
+        List<ArticleFile> articleFiles = articleFileRepository.findAllByArticleId(articleId);
+        List<String> fileNames = new ArrayList<>();
+        List<String> fileUrls = new ArrayList<>();
+        for (int i = 0; i < articleFiles.size(); i++) {
+            fileNames.add(articleFiles.get(i).getFileName());
+            fileUrls.add(articleFiles.get(i).getFileUrl());
+        }
+
+        ArticleResponseDto articleResponseDto = ArticleResponseDto.builder()
+                .articleId(article.getId())
+                .articleName(article.getArticleName())
+                .substance(article.getSubstance())
+                .category(article.getCategory())
+                .status(article.getStatus())
+                .location(article.getLocation())
+                .createdAt(article.getCreatedAt())
+                .updatedAt(article.getUpdatedAt())
+                .sellPrice(article.getSellPrice())
+                .fileName(fileNames)
+                .fileUrl(fileUrls)
+                .build();
+
+        return ResponseDto.success(articleResponseDto);
     }
 
+    // 거래글 수정
     @Transactional
-    public EditArticleResponseDto editArticle(Long articleId, EditArticleRequestDto editRequestDto) {
+    public ResponseDto<?> editArticle(UserDetailsImpl userDetails, Long articleId, EditArticleRequestDto editRequestDto) {
+
+        User user = userRepository.findByEmail(userDetails.getUser().getEmail()).orElseThrow(
+                () -> new RequestException(ErrorCode.NO_PERMISSION_TO_WRITE_NOTICE_400)
+        );
+
         Article article = getArticle(articleId);
+
+        if (!user.equals(article.getUser())) {
+            throw new RequestException(ErrorCode.NO_PERMISSION_TO_MODIFY_NOTICE_400);
+        }
 
         article.update(editRequestDto);
 
-        return EditArticleResponseDto.builder()
-                .articleName(editRequestDto.getArticleName())
-                .substance(editRequestDto.getSubstance())
-                .location(editRequestDto.getLocation())
-                .sellPrice(editRequestDto.getSellPrice())
-                .category(editRequestDto.getCategory())
+        EditArticleResponseDto editArticleResponseDto = EditArticleResponseDto.builder()
+                .articleId(article.getId())
+                .articleName(article.getArticleName())
+                .substance(article.getSubstance())
+                .location(article.getLocation())
+                .sellPrice(article.getSellPrice())
+                .category(article.getCategory())
+//                .fileName(fileNames)
+//                .fileUrl(fileUrls)
+                .updatedAt(article.getUpdatedAt())
                 .build();
+        return ResponseDto.success(editArticleResponseDto);
     }
 
     @Transactional
-    public String deleteArticle(Long articleId) {
+    public ResponseDto<?> deleteArticle(UserDetailsImpl userDetails, Long articleId) {
+
+        User user = userRepository.findByEmail(userDetails.getUser().getEmail()).orElseThrow(
+                () -> new RequestException(ErrorCode.USER_NOT_EXIST)
+        );
+
         Article article = getArticle(articleId);
 
+        if (!user.equals(article.getUser())) {
+            throw new RequestException(ErrorCode.NO_PERMISSION_TO_MODIFY_NOTICE_400);
+        }
+
         articleRepository.delete(article);
-        return "삭제 완료";
+        return ResponseDto.success("삭제 완료");
     }
 
     Article getArticle(Long articleId) {
+
         return articleRepository.findById(articleId).orElseThrow((
         ) -> new RequestException(ErrorCode.ARTICLE_NOT_FOUND_404));
-//                new RuntimeException(ErrorCode.ARTICLE_NOT_FOUND_404));
     }
 
-    User getUser(Long userId) {
-        return userRepository.findById(userId).orElseThrow(() -> new RequestException(ErrorCode.UNAUTHORIZED_TOKEN));
-    }
 
 }
+
