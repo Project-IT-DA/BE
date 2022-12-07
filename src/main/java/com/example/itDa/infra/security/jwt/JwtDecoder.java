@@ -38,18 +38,18 @@ public class JwtDecoder {
             throw new AuthenticationServiceException("유효시간이 지난 토큰입니다 ");
         }
 
-        String email = decodedJWT
+        String username = decodedJWT
                 .getClaim(CLAIM_USER_NAME)
                 .asString();
 
-        String nickname = decodedJWT
-                .getClaim(CLAIM_USER_NICKNAME)
+        String email = decodedJWT
+                .getClaim(CLAIM_USER_EMAIL)
                 .asString();
 
 
         return UserInfo.builder()
+                .username(username)
                 .email(email)
-                .nickname(nickname)
                 .build();
     }
 
