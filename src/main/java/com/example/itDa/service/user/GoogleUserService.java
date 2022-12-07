@@ -154,7 +154,7 @@ public class GoogleUserService {
         HttpEntity<MultiValueMap<String, String>> googleUserInfoRequest = new HttpEntity<>(headers);
         RestTemplate rt = new RestTemplate();
         ResponseEntity<String> response = rt.exchange(
-                "https://oauth2.googleapis.com/token",
+                "https://www.googleapis.com/oauth2/v2/userinfo",
                 HttpMethod.GET,
                 googleUserInfoRequest,
                 String.class
@@ -168,18 +168,15 @@ public class GoogleUserService {
         JsonNode jsonNode = objectMapper
                 .readTree(responseBody);
 
-        Long googleId = jsonNode.get("sub").asLong();
+        String googleId = jsonNode.get("id").asText();
 
         String username = jsonNode
-                .get("userinfo")
                 .get("name").asText();
 
         String profileImg = jsonNode
-                .get("userinfo")
                 .get("picture").asText();
 
         String email = jsonNode
-                .get("userinfo")
                 .get("email").asText();
 
         return GoogleSocialDto.builder()

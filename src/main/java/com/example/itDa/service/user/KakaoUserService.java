@@ -90,7 +90,7 @@ public class KakaoUserService {
             String password = UUID.randomUUID().toString();
 
             kakaoUser = User.builder()
-                    .socialId(kakaoSocialDto.getKakaoId())
+                    .socialId(kakaoSocialDto.getKakaoId().toString())
                     .username(kakaoSocialDto.getUsername())
                     .password(encoder.encode(password))
                     .email(kakaoSocialDto.getEmail())
