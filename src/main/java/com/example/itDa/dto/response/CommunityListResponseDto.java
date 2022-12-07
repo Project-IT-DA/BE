@@ -17,6 +17,7 @@ public class CommunityListResponseDto {
     private String title;
     private String content;
     private List<String> imgUrls;
+    private List<String> imgNames;
     private int commentsNum;
 
 }

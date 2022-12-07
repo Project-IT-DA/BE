@@ -97,9 +97,11 @@ public class CommunityService {
         for(Community community : communityList){
             int comments = commentRepository.countAllByCommunity(community);
             List<String> imgUrls = new ArrayList<>();
-            List<CommunityFile> communityFile = communityFileRepository.findAllByCommunityId(community.getId());
-            for (int i = 0; i < communityFile.size(); i++) {
-                imgUrls.add(communityFile.get(i).getImgUrl());
+            List<String> imgNames = new ArrayList<>();
+            List<CommunityFile> communityFiles = communityFileRepository.findAllByCommunityId(community.getId());
+            for (CommunityFile communityFile : communityFiles) {
+                imgUrls.add(communityFile.getImgUrl());
+                imgNames.add(communityFile.getImgName());
             }
             responseDtoList.add(CommunityListResponseDto.builder()
                     .commuId(community.getId())
@@ -107,6 +109,7 @@ public class CommunityService {
                     .title(community.getTitle())
                     .content(community.getContent())
                     .imgUrls(imgUrls)
+                    .imgNames(imgNames)
                     .commentsNum(comments)
                     .build());
         }
@@ -125,9 +128,11 @@ public class CommunityService {
         List<Comment> commentList = commentRepository.findAllByCommunity(community);
         List<CommentResponseDto> commentResponseDtoList = new ArrayList<>();
         List<String> imgUrls = new ArrayList<>();
+        List<String> imgNames = new ArrayList<>();
         List<CommunityFile> communityFile = communityFileRepository.findAllByCommunityId(community.getId());
-        for (int i = 0; i < communityFile.size(); i++) {
-            imgUrls.add(communityFile.get(i).getImgUrl());
+        for (CommunityFile file : communityFile) {
+            imgUrls.add(file.getImgUrl());
+            imgNames.add(file.getImgName());
         }
         for (Comment comment : commentList) {
             commentResponseDtoList.add(
@@ -143,6 +148,7 @@ public class CommunityService {
                 .title(community.getTitle())
                 .content(community.getContent())
                 .imgUrls(imgUrls)
+                .imgNames(imgNames)
                 .comments(commentResponseDtoList)
                 .build();
 
