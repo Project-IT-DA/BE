@@ -36,6 +36,10 @@ import static com.example.itDa.infra.security.handler.AuthenticationSuccessHandl
 @RequiredArgsConstructor
 @Service
 public class KakaoUserService {
+
+    @Value("${kakao.login.admin-key}")
+    private String APP_ADMIN_KEY;
+
     @Value("${kakao.login.client-id}")
     private String CLIENT_ID;
 
