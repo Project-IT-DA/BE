@@ -138,8 +138,8 @@ public class WebSecurityConfig {
         // 회원 관리 API SKIP 적용
         skipPathList.add("POST,/api/users/signup");
         skipPathList.add("POST,/api/users/email");
-        skipPathList.add("GET,/users/kakao/callback/**");
-        skipPathList.add("GET,/users/google/callback/**");
+        skipPathList.add("GET,/users/login/kakao/**");
+        skipPathList.add("GET,/user/login/google/**");
 
 
         //WebSocket 관련 -> Filter 역할 Intercepter로 대신함.

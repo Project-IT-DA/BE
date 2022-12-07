@@ -35,7 +35,7 @@ public class User {
     private int density;
 
     @Column
-    private Long socialId;
+    private String socialId;
 
     @Column
     private String profileImg;

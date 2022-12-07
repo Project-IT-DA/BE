@@ -10,10 +10,10 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class KakaoSocialDto {
-// 카카오서버랑 통신
-    private Long kakaoId; // email
-    private String email;
-    private String username;
-    private String profileImg;
+public class GoogleSocialDto {
+        // 구글서버랑 통신
+        private String googleId; // email
+        private String email;
+        private String username;
+        private String profileImg;
 }

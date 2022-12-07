@@ -35,11 +35,4 @@ public class UserService {
                 .orElseThrow(() -> new RequestException(ErrorCode.USER_NOT_EXIST));
     }
 
-    // 회원탈퇴
-    public ResponseDto<Boolean> signOut(User user) {
-        kakaoUserService.signOutKakaoUser(user);
-        return ResponseDto.success(true);
-    }
-
-
 }
