@@ -8,4 +8,6 @@ import java.util.List;
 public interface ArticleFileRepository extends JpaRepository<ArticleFile,Long> {
     List<ArticleFile> findAllByArticleId(Long id);
 
+    void deleteByFileUrl (String deleteFileUrls);
+
 }
