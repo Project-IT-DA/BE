@@ -32,6 +32,7 @@ public class ArticleResponseDto {
 
     private List<String> fileName;
     private List<String> fileUrl;
+    private boolean like;
 
 
 }

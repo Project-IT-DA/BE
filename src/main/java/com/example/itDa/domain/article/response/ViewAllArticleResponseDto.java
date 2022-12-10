@@ -29,4 +29,5 @@ public class ViewAllArticleResponseDto {
 
     private List<String> fileName;
     private List<String> fileUrl;
+    private boolean like;
 }

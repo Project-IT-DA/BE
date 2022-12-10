@@ -3,7 +3,9 @@ package com.example.itDa.domain.article.service;
 import com.example.itDa.domain.Status;
 import com.example.itDa.domain.article.Article;
 import com.example.itDa.domain.article.ArticleFile;
+import com.example.itDa.domain.article.Like;
 import com.example.itDa.domain.article.repository.ArticleRepository;
+import com.example.itDa.domain.article.repository.LikeRepository;
 import com.example.itDa.domain.article.request.ArticleRequestDto;
 import com.example.itDa.domain.article.request.EditArticleRequestDto;
 import com.example.itDa.domain.article.response.ArticleResponseDto;
@@ -25,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ArticleService {
@@ -35,13 +38,18 @@ public class ArticleService {
 
     private final ArticleFileRepository articleFileRepository;
 
+    private final LikeRepository likeRepository;
+
 
     @Autowired
-    public ArticleService(ArticleRepository articleRepository, UserRepository userRepository, S3UploaderService s3UploaderService, ArticleFileRepository articleFileRepository) {
+    public ArticleService(ArticleRepository articleRepository, UserRepository userRepository,
+                          S3UploaderService s3UploaderService, ArticleFileRepository articleFileRepository,
+                          LikeRepository likeRepository) {
         this.articleRepository = articleRepository;
         this.userRepository = userRepository;
         this.s3UploaderService = s3UploaderService;
         this.articleFileRepository = articleFileRepository;
+        this.likeRepository = likeRepository;
     }
 
     //거래글 작성
@@ -106,7 +114,7 @@ public class ArticleService {
     }
 
     // 거래글 전체 조회
-    public ResponseDto<?> viewAllArticle() {
+    public ResponseDto<?> viewAllArticle(UserDetailsImpl userDetails) {
         List<Article> articleList = articleRepository.findAllByOrderByCreatedAtDesc();
         List<ViewAllArticleResponseDto> responses = new ArrayList<>();
 
@@ -130,6 +138,7 @@ public class ArticleService {
                     .fileUrl(fileUrls)
                     .createdAt(article.getCreatedAt())
                     .updatedAt(article.getUpdatedAt())
+                    .like(likeCheck(article,userDetails.getUser()))
                     .build();
             responses.add(viewAllArticleResponseDto);
         }
@@ -140,7 +149,7 @@ public class ArticleService {
 
 
     // 거래글 단일 조회
-    public ResponseDto<ArticleResponseDto> viewArticle(Long articleId) {
+    public ResponseDto<ArticleResponseDto> viewArticle(Long articleId,UserDetailsImpl userDetails) {
 
         Article article = getArticle(articleId);
 
@@ -165,6 +174,7 @@ public class ArticleService {
                 .sellPrice(article.getSellPrice())
                 .fileName(fileNames)
                 .fileUrl(fileUrls)
+                .like(likeCheck(article,userDetails.getUser()))
                 .build();
 
         return ResponseDto.success(articleResponseDto);
@@ -251,6 +261,7 @@ public class ArticleService {
                 .fileName(fileNames)
                 .fileUrl(fileUrls)
                 .updatedAt(article.getUpdatedAt())
+                .status(article.getStatus())
                 .build();
         return ResponseDto.success(editArticleResponseDto);
     }
@@ -290,5 +301,27 @@ public class ArticleService {
     }
 
 
+    public String likeArticle(Long articleId, UserDetailsImpl userDetails) {
+        User user = userDetails.getUser();
+        Article article = getArticle(articleId);
+
+        Optional<Like> existLike = likeRepository.findByUserAndArticle(user,article);
+
+        if (!existLike.isPresent()){
+            Like like = new Like(article,user);
+            likeRepository.save(like);
+
+            return "찜 완료";
+        }else {
+
+            likeRepository.delete(existLike.get());
+
+            return "찜 삭제";
+        }
+
+    }
+    public boolean likeCheck(Article article, User user){
+        return likeRepository.existsByUserAndArticle(user,article);
+    }
 }
 
