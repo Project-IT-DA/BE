@@ -28,13 +28,13 @@ public class ArticleController {
     }
 
     @GetMapping("api/articles")
-    public ResponseDto<?> viewAllArticle(){
-        return articleService.viewAllArticle();
+    public ResponseDto<?> viewAllArticle(@AuthenticationPrincipal UserDetailsImpl userDetails){
+        return articleService.viewAllArticle(userDetails);
     }
 
     @GetMapping("api/articles/{articleId}")
-    public ResponseDto<?> viewArticle(@PathVariable Long articleId){
-        return articleService.viewArticle(articleId);
+    public ResponseDto<?> viewArticle(@PathVariable Long articleId, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return articleService.viewArticle(articleId,userDetails);
     }
 
     @PutMapping("api/articles/{articleId}")
@@ -47,5 +47,10 @@ public class ArticleController {
     @DeleteMapping("api/articles/{articleId}")
     public ResponseDto<?> deleteArticle(@PathVariable Long articleId,@AuthenticationPrincipal UserDetailsImpl userDetails){
         return articleService.deleteArticle(userDetails,articleId);
+    }
+
+    @PostMapping("api/articles/{articleId}/like")
+    public ResponseDto<?> likeArticle(@PathVariable Long articleId, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return ResponseDto.success(articleService.likeArticle(articleId,userDetails));
     }
 }

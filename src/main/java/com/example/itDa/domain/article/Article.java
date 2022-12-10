@@ -10,6 +10,8 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -49,14 +51,11 @@ public class Article extends TimeStamped {
     @JoinColumn(name = "user_id", nullable = true)
     private User user;
 
-//    public Article(ArticleRequestDto requestDto) {
-//        this.articleName = requestDto.getArticleName();
-//        this.substance = requestDto.getSubstance();
-//        this.itemImg = requestDto.getItemImg();
-//        this.location = requestDto.getLocation();
-//        this.category = requestDto.getCategory();
-//        this.sellPrice = requestDto.getSellPrice();
-//    }
+    @OneToMany(mappedBy = "article", fetch = FetchType.LAZY, cascade = CascadeType.ALL,orphanRemoval = true)
+    @JsonIgnore
+    private List<Like> likeList = new ArrayList<>();
+
+
 
     public void update(EditArticleRequestDto editRequestDto) {
         this.articleName = editRequestDto.getArticleName();
