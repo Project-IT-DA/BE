@@ -1,5 +1,6 @@
 package com.example.itDa.domain.article.service;
 
+import com.example.itDa.domain.Category;
 import com.example.itDa.domain.Status;
 import com.example.itDa.domain.article.Article;
 import com.example.itDa.domain.article.ArticleFile;
@@ -128,7 +129,9 @@ public class ArticleService {
                 fileUrls.add(articleFile.getFileUrl());
             }
             ViewAllArticleResponseDto viewAllArticleResponseDto = ViewAllArticleResponseDto.builder()
-                    .id(article.getId())
+                    .userId(article.getUser().getId())
+                    .username(article.getUser().getUsername())
+                    .articleId(article.getId())
                     .articleName(article.getArticleName())
                     .sellPrice(article.getSellPrice())
                     .category(article.getCategory())
@@ -138,7 +141,7 @@ public class ArticleService {
                     .fileUrl(fileUrls)
                     .createdAt(article.getCreatedAt())
                     .updatedAt(article.getUpdatedAt())
-                    .like(likeCheck(article,userDetails.getUser()))
+                    .like(likeCheck(article, userDetails.getUser()))
                     .build();
             responses.add(viewAllArticleResponseDto);
         }
@@ -149,7 +152,7 @@ public class ArticleService {
 
 
     // 거래글 단일 조회
-    public ResponseDto<ArticleResponseDto> viewArticle(Long articleId,UserDetailsImpl userDetails) {
+    public ResponseDto<ArticleResponseDto> viewArticle(Long articleId, UserDetailsImpl userDetails) {
 
         Article article = getArticle(articleId);
 
@@ -163,6 +166,9 @@ public class ArticleService {
         }
 
         ArticleResponseDto articleResponseDto = ArticleResponseDto.builder()
+                .userId(article.getUser().getId())
+                .username(article.getUser().getUsername())
+                .density(article.getUser().getDensity())
                 .articleId(article.getId())
                 .articleName(article.getArticleName())
                 .substance(article.getSubstance())
@@ -174,7 +180,7 @@ public class ArticleService {
                 .sellPrice(article.getSellPrice())
                 .fileName(fileNames)
                 .fileUrl(fileUrls)
-                .like(likeCheck(article,userDetails.getUser()))
+                .like(likeCheck(article, userDetails.getUser()))
                 .build();
 
         return ResponseDto.success(articleResponseDto);
@@ -233,7 +239,7 @@ public class ArticleService {
         try {
             editFileUrls = s3UploaderService.uploadFormDataFiles(multipartFiles, "upload");
         } catch (IOException e) {
-           throw new RuntimeException(e);
+            throw new RuntimeException(e);
         }
         if (null != multipartFiles) {
             for (int i = 0; i < multipartFiles.length; i++) {
@@ -284,8 +290,8 @@ public class ArticleService {
             articleFileUrls.add(articleFile.getFileUrl());
         }
         // 빈배열에 담긴 Url 을 삭제해준다.
-        for(int i = 0; i < articleFileUrls.size(); i++){
-            s3UploaderService.deleteFiles(articleFileUrls.get(i),"upload");
+        for (int i = 0; i < articleFileUrls.size(); i++) {
+            s3UploaderService.deleteFiles(articleFileUrls.get(i), "upload");
         }
         // articleFileDb 에서도 삭제
         // articleDB 에서도 article 삭제
@@ -294,25 +300,25 @@ public class ArticleService {
         return ResponseDto.success("삭제 완료");
     }
 
+
     Article getArticle(Long articleId) {
 
         return articleRepository.findById(articleId).orElseThrow((
         ) -> new RequestException(ErrorCode.ARTICLE_NOT_FOUND_404));
     }
 
-
     public String likeArticle(Long articleId, UserDetailsImpl userDetails) {
         User user = userDetails.getUser();
         Article article = getArticle(articleId);
 
-        Optional<Like> existLike = likeRepository.findByUserAndArticle(user,article);
+        Optional<Like> existLike = likeRepository.findByUserAndArticle(user, article);
 
-        if (!existLike.isPresent()){
-            Like like = new Like(article,user);
+        if (!existLike.isPresent()) {
+            Like like = new Like(article, user);
             likeRepository.save(like);
 
             return "찜 완료";
-        }else {
+        } else {
 
             likeRepository.delete(existLike.get());
 
@@ -320,8 +326,49 @@ public class ArticleService {
         }
 
     }
-    public boolean likeCheck(Article article, User user){
-        return likeRepository.existsByUserAndArticle(user,article);
+
+    public boolean likeCheck(Article article, User user) {
+        return likeRepository.existsByUserAndArticle(user, article);
     }
-}
+
+    public List<ViewAllArticleResponseDto> searchArticle(String title, UserDetailsImpl userDetails) {
+
+        List<Article> articleList = articleRepository.findByArticleNameContaining(title);
+        List<ViewAllArticleResponseDto> responseDtoList = new ArrayList<>();
+
+        if (articleList.isEmpty()) {
+            throw new RequestException(ErrorCode.ARTICLE_NOT_SEARCH_404);
+        }
+
+            for (Article article : articleList) {
+                List<ArticleFile> articleFiles = articleFileRepository.findAllByArticleId(article.getId());
+                List<String> fileNames = new ArrayList<>();
+                List<String> fileUrls = new ArrayList<>();
+                for (ArticleFile articleFile : articleFiles) {
+                    fileNames.add(articleFile.getFileName());
+                    fileUrls.add(articleFile.getFileUrl());
+                }
+                ViewAllArticleResponseDto viewAllArticleResponseDto = ViewAllArticleResponseDto.builder()
+                        .userId(article.getUser().getId())
+                        .username(article.getUser().getUsername())
+                        .articleId(article.getId())
+                        .articleName(article.getArticleName())
+                        .sellPrice(article.getSellPrice())
+                        .category(article.getCategory())
+                        .status(article.getStatus())
+                        .location(article.getLocation())
+                        .fileName(fileNames)
+                        .fileUrl(fileUrls)
+                        .createdAt(article.getCreatedAt())
+                        .updatedAt(article.getUpdatedAt())
+                        .like(likeCheck(article, userDetails.getUser()))
+                        .build();
+                responseDtoList.add(viewAllArticleResponseDto);
+
+
+            }
+            return responseDtoList;
+        }
+    }
+
 

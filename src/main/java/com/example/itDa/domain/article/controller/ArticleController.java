@@ -1,8 +1,10 @@
 package com.example.itDa.domain.article.controller;
 
+import com.example.itDa.domain.Category;
 import com.example.itDa.domain.article.request.ArticleRequestDto;
 import com.example.itDa.domain.article.request.EditArticleRequestDto;
 import com.example.itDa.domain.article.response.ArticleResponseDto;
+import com.example.itDa.domain.article.response.ViewAllArticleResponseDto;
 import com.example.itDa.domain.article.service.ArticleService;
 import com.example.itDa.infra.global.dto.ResponseDto;
 import com.example.itDa.infra.security.UserDetailsImpl;
@@ -10,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 public class ArticleController {
@@ -52,5 +56,10 @@ public class ArticleController {
     @PostMapping("api/articles/{articleId}/like")
     public ResponseDto<?> likeArticle(@PathVariable Long articleId, @AuthenticationPrincipal UserDetailsImpl userDetails){
         return ResponseDto.success(articleService.likeArticle(articleId,userDetails));
+    }
+
+    @GetMapping("api/articles/search")
+    public ResponseDto<List<ViewAllArticleResponseDto>> searchArticle(@RequestParam String title,@AuthenticationPrincipal UserDetailsImpl userDetails){
+        return ResponseDto.success(articleService.searchArticle(title,userDetails));
     }
 }

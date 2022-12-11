@@ -33,6 +33,8 @@ public enum ErrorCode {
     // Article 관련
     ARTICLE_NOT_FOUND_404(HttpStatus.NOT_FOUND, "요청한 거래글 ID가 없습니다."),
     ARTICLE_DUPLICATION_409(HttpStatus.CONFLICT, "이미 등록된 거래글 ID 입니다."),
+    ARTICLE_NOT_SEARCH_404(HttpStatus.NOT_FOUND, "요청하신 단어가 포함된 거래글이 없습니다."),
+
 
     // Community 관련
     COMMUNITY_NOT_FOUND_404(HttpStatus.NOT_FOUND, "해당 게시글이 존재하지 않습니다."),
