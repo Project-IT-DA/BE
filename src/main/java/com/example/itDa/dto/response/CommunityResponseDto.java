@@ -15,6 +15,8 @@ public class CommunityResponseDto {
 
     private Long commuId;
     private Long userId;
+    private String username;
+    private String createdAt;
     private String title;
     private String content;
     private List<CommentResponseDto> comments;

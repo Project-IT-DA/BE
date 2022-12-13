@@ -1,10 +1,9 @@
 package com.example.itDa.domain.model;
 
 import com.example.itDa.dto.request.CommunityRequestDto;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -13,6 +12,8 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Setter
+@EntityListeners(AuditingEntityListener.class)
 @Builder
 @Entity
 public class Community {
@@ -26,6 +27,9 @@ public class Community {
 
     @Column(nullable = false)
     private String content;
+
+    @CreatedDate
+    private String createdAt;
 
 
     @ManyToOne(fetch = FetchType.LAZY)

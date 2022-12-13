@@ -76,6 +76,8 @@ public class CommunityService {
         CommunityResponseDto communityResponseDto = CommunityResponseDto.builder()
                 .userId(user.getId())
                 .commuId(community.getId())
+                .username(community.getUser().getUsername())
+                .createdAt(community.getCreatedAt())
                 .title(community.getTitle())
                 .content(community.getContent())
                 .imgUrls(imgUrls)
@@ -106,11 +108,13 @@ public class CommunityService {
             responseDtoList.add(CommunityListResponseDto.builder()
                     .commuId(community.getId())
                     .userId(community.getUser().getId())
+                    .username(community.getUser().getUsername())
+                    .createdAt(community.getCreatedAt())
                     .title(community.getTitle())
                     .content(community.getContent())
                     .imgUrls(imgUrls)
                     .imgNames(imgNames)
-                    .commentsNum(comments)
+                    .commentsCnt(comments)
                     .build());
         }
 
