@@ -9,5 +9,5 @@ import java.util.List;
 public interface CommunityRepository extends JpaRepository<Community, Long> {
     List<Community> findByUser(User user);
 
-    Long countByEmail(String email);
+    Long countByUser(User user);
 }

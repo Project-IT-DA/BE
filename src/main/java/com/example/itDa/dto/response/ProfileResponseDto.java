@@ -32,7 +32,7 @@ public class ProfileResponseDto {
                 .profileImg(userDetails.getUser().getProfileImg())
                 .articles(articleRepository.findByUser(userDetails.getUser()))
                 .communities(communityRepository.findByUser(userDetails.getUser()))
-                .density(articleRepository.countByEmail(userDetails.getUser().getEmail()) + communityRepository.countByEmail(userDetails.getUser().getEmail()))
+                .density(articleRepository.countByUser(userDetails.getUser()) + communityRepository.countByUser(userDetails.getUser()))
                 .build();
     }
 

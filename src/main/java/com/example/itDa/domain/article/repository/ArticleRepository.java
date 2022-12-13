@@ -12,5 +12,5 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
 
     List<Article> findByUser(User user);
 
-    Long countByEmail(String email);
+    Long countByUser(User user);
 }
