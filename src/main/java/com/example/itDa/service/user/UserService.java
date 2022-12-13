@@ -1,19 +1,24 @@
 package com.example.itDa.service.user;
 
+import com.example.itDa.domain.article.repository.ArticleRepository;
 import com.example.itDa.domain.model.User;
+import com.example.itDa.domain.repository.CommunityRepository;
 import com.example.itDa.domain.repository.UserRepository;
+import com.example.itDa.dto.request.UpdateProfileDto;
 import com.example.itDa.dto.response.ProfileResponseDto;
 import com.example.itDa.infra.global.dto.ResponseDto;
 import com.example.itDa.infra.global.exception.ErrorCode;
 import com.example.itDa.infra.global.exception.RequestException;
+import com.example.itDa.infra.s3.S3UploaderService;
 import com.example.itDa.infra.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @Service
 @RequiredArgsConstructor
@@ -21,17 +26,32 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class UserService {
     private final UserRepository userRepository;
-    private final KakaoUserService kakaoUserService;
+    private final ArticleRepository articleRepository;
+    private final CommunityRepository communityRepository;
+    private final S3UploaderService s3UploaderService;
 
-    public ResponseEntity<?> getUserProfile(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        checkEmail(userDetails.getUser().getEmail());
-
-        // 마이페이지에 내가 쓴 article, communities 넣어야하나 아니면 따로 줄 수 있나
-        return new ResponseEntity<>(ResponseDto.success(ProfileResponseDto.of(userDetails)), HttpStatus.OK);
+    public ResponseDto<ProfileResponseDto> getUserProfile(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return ResponseDto.success(ProfileResponseDto.of(userDetails, articleRepository, communityRepository));
     }
 
-    private User checkEmail(String email) {
-        return userRepository.findByEmail(email)
+    public ResponseDto<ProfileResponseDto> updateUserProfile(UserDetailsImpl userDetails,
+                                                             MultipartFile multipartFile,
+                                                             UpdateProfileDto updateProfileDto) {
+        try {
+            s3UploaderService.uploadFormDataFile(multipartFile, "profile");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        User user = checkId(userDetails.getUser().getId());
+        user.setProfileImg(updateProfileDto.getImgUrl());
+        user.setUsername(updateProfileDto.getUsername());
+        userRepository.save(user);
+
+        return ResponseDto.success(ProfileResponseDto.of(userDetails, articleRepository, communityRepository));
+    }
+
+    private User checkId(Long id) {
+        return userRepository.findById(id)
                 .orElseThrow(() -> new RequestException(ErrorCode.USER_NOT_EXIST));
     }
 
