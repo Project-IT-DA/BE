@@ -64,9 +64,7 @@ public class WebSecurityConfig {
                         "/swagger/**",
                         "/h2-console/**",
                         "/stomp/chat/**",
-                        "/actuator/**",
-                        "/users/**"
-
+                        "/actuator/**"
         );
 
     }
@@ -138,7 +136,7 @@ public class WebSecurityConfig {
         skipPathList.add("POST,/api/users/signup");
         skipPathList.add("POST,/api/users/email");
         skipPathList.add("GET,/users/login/kakao/**");
-        skipPathList.add("GET,/user/login/google/**");
+        skipPathList.add("GET,/users/login/google/**");
 
         // 거래글 관리 API SKIP 적용
         skipPathList.add("GET,/api/articles/**");
