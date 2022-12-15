@@ -1,7 +1,9 @@
 package com.example.itDa.dto.response;
 
 import com.example.itDa.domain.article.Article;
+import com.example.itDa.domain.article.repository.ArticleRepository;
 import com.example.itDa.domain.model.Community;
+import com.example.itDa.domain.repository.CommunityRepository;
 import com.example.itDa.infra.security.UserDetailsImpl;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,18 +19,20 @@ import java.util.List;
 public class ProfileResponseDto {
     private String email;
     private String username;
-    private String createdAt;
-    private String profileImge;
+    private String profileImg;
     private List<Article> articles;
     private List<Community> communities;
+    private Long density;
 
 
-    public static ProfileResponseDto of(UserDetailsImpl userDetails) {
+    public static ProfileResponseDto of(UserDetailsImpl userDetails, ArticleRepository articleRepository, CommunityRepository communityRepository) {
         return ProfileResponseDto.builder()
                 .email(userDetails.getUser().getEmail())
                 .username(userDetails.getUser().getUsername())
-                .createdAt(userDetails.getUser().getCreatedAt())
-                .profileImge(userDetails.getUser().getProfileImg())
+                .profileImg(userDetails.getUser().getProfileImg())
+                .articles(articleRepository.findByUser(userDetails.getUser()))
+                .communities(communityRepository.findByUser(userDetails.getUser()))
+                .density(articleRepository.countByUser(userDetails.getUser()) + communityRepository.countByUser(userDetails.getUser()))
                 .build();
     }
 
