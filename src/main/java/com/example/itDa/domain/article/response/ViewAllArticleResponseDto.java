@@ -16,17 +16,17 @@ import java.util.List;
 @AllArgsConstructor
 public class ViewAllArticleResponseDto {
 
-    private Long id;
+    private Long articleId;
+    private Long userId;
+    private String username;
     private String articleName;
-    private String substance;
-
     private Category category;
     private Status status;
     private String location;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private int sellPrice;
-
     private List<String> fileName;
     private List<String> fileUrl;
+    private boolean like;
 }

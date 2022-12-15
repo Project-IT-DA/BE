@@ -14,10 +14,12 @@ import java.util.List;
 public class CommunityListResponseDto {
     private Long commuId;
     private Long userId;
+    private String username;
+    private String createdAt;
     private String title;
     private String content;
     private List<String> imgUrls;
     private List<String> imgNames;
-    private int commentsNum;
+    private int commentsCnt;
 
 }
