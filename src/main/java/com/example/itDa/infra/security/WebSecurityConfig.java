@@ -171,7 +171,6 @@ public class WebSecurityConfig {
 
         configuration.addAllowedOrigin("http://localhost:3000");
         configuration.addAllowedOrigin("https://it-da.shop");
-        configuration.addAllowedOrigin("http://localhost:8080");
         configuration.addAllowedOrigin("https://cheoljun.shop");
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");
