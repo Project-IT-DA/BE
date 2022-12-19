@@ -88,6 +88,47 @@ public class S3UploaderService {
 
     }
 
+    public String uploadFormDataFile(MultipartFile multipartFile, String dirName) throws IOException {
+
+        //전달받은 파일 존재하는지 확인
+        if (multipartFile == null || multipartFile.getOriginalFilename().equals("")) {
+            return null;
+        }
+        File uploadFile = convertFormDataFile(multipartFile)
+                .orElseThrow(() -> new RequestException(ErrorCode.COMMON_INTERNAL_ERROR_500));
+
+
+        //S3업로드하고, 업로드에 접근할 수 있는 경로를 받고 그 결과값을 리턴
+        return putS3(uploadFile, dirName);
+    }
+
+
+    private Optional<File> convertFormDataFile(MultipartFile multipartFile) throws  IOException {
+        if(multipartFile.isEmpty()) {
+            return Optional.empty();
+        }
+
+        String fileOriginalFilename = multipartFile.getOriginalFilename();
+        String filename= fileOriginalFilename.substring(0,multipartFile.getOriginalFilename().lastIndexOf("."));
+        String fileExtension = fileOriginalFilename.substring(multipartFile.getOriginalFilename().lastIndexOf("."));
+
+        String now = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
+        File convertFile = new File(System.getProperty("user.dir") + "/" + filename +"_"+now+ fileExtension);
+
+        if (convertFile.createNewFile()) {
+            try (FileOutputStream fos = new FileOutputStream(convertFile)) {
+                fos.write(multipartFile.getBytes());
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new RequestException(ErrorCode.COMMON_INTERNAL_ERROR_500);
+            }
+        }
+
+        return Optional.of(convertFile);
+
+    }
+
+
     //Formdata로 넘어온 이미지 S3에 올리기
     //로컬에 파일 업로드하기
     private Optional<ArrayList<File>> convertFormDataFiles(MultipartFile[] files) throws IOException {

@@ -64,9 +64,7 @@ public class WebSecurityConfig {
                         "/swagger/**",
                         "/h2-console/**",
                         "/stomp/chat/**",
-                        "/actuator/**",
-                        "/users/**"
-
+                        "/actuator/**"
         );
 
     }
@@ -138,7 +136,7 @@ public class WebSecurityConfig {
         skipPathList.add("POST,/api/users/signup");
         skipPathList.add("POST,/api/users/email");
         skipPathList.add("GET,/users/login/kakao/**");
-        skipPathList.add("GET,/user/login/google/**");
+        skipPathList.add("GET,/users/login/google/**");
 
 
 
@@ -172,7 +170,9 @@ public class WebSecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         configuration.addAllowedOrigin("http://localhost:3000");
+        configuration.addAllowedOrigin("https://it-da.shop");
         configuration.addAllowedOrigin("http://localhost:8080");
+        configuration.addAllowedOrigin("https://cheoljun.shop");
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");
         configuration.setAllowCredentials(true);

@@ -1,17 +1,18 @@
 package com.example.itDa.domain.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Getter
+@Setter
+@EntityListeners(AuditingEntityListener.class)
 @Entity
 @Table(name="users")
 public class User {
@@ -20,7 +21,8 @@ public class User {
     private Long id;
 
     @CreatedDate
-    private String createdAt;
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
 
     @Column(nullable = false)
     private String email;
