@@ -12,6 +12,7 @@ import com.example.itDa.infra.security.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -71,7 +72,7 @@ public class ArticleController {
     }
 
     @GetMapping("api/articles2")
-    public ResponseDto<Page<ViewAllArticleResponseDto>>getViewAllArticle(Pageable pageable ,@AuthenticationPrincipal UserDetailsImpl userDetails){
+    public ResponseDto<Page<ViewAllArticleResponseDto>>getViewAllArticle(@PageableDefault(size = 5) Pageable pageable, @AuthenticationPrincipal UserDetailsImpl userDetails){
         return ResponseDto.success(articleRepository.getViewAllArticle(pageable, userDetails));
     }
 

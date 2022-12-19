@@ -1,12 +1,13 @@
 package com.example.itDa.domain.article.repository;
 
 import com.example.itDa.domain.article.Article;
-import com.example.itDa.domain.article.QArticle;
+import com.example.itDa.domain.article.ArticleFile;
 import com.example.itDa.domain.article.response.ViewAllArticleResponseDto;
 import com.example.itDa.domain.model.User;
 import com.example.itDa.domain.repository.ArticleFileRepository;
 import com.example.itDa.infra.security.UserDetailsImpl;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -24,7 +25,8 @@ public class ArticleRepositoryCustomImpl implements ArticleRepositoryCustom {
     private final JPAQueryFactory queryFactory;
     private final ArticleFileRepository articleFileRepository;
 
-    public ArticleRepositoryCustomImpl(EntityManager em, LikeRepository likeRepository, ArticleFileRepository articleFileRepository) {
+    public ArticleRepositoryCustomImpl(EntityManager em, LikeRepository likeRepository,
+                                       ArticleFileRepository articleFileRepository) {
         this.likeRepository = likeRepository;
         this.queryFactory = new JPAQueryFactory(em);
         this.articleFileRepository = articleFileRepository;
@@ -48,7 +50,15 @@ public class ArticleRepositoryCustomImpl implements ArticleRepositoryCustom {
 
         List<ViewAllArticleResponseDto> articleResponseDtoList = new ArrayList<>();
 
+
         for (Article findArticle : result) {
+            List<ArticleFile> articleFiles = articleFileRepository.findAllByArticleId(findArticle.getId());
+            List<String> fileNames = new ArrayList<>();
+            List<String> fileUrls = new ArrayList<>();
+            for (ArticleFile articleFile : articleFiles) {
+                fileNames.add(articleFile.getFileName());
+                fileUrls.add(articleFile.getFileUrl());
+            }
             articleResponseDtoList.add(
                     ViewAllArticleResponseDto.builder()
                             .userId(findArticle.getUser().getId())
@@ -59,19 +69,22 @@ public class ArticleRepositoryCustomImpl implements ArticleRepositoryCustom {
                             .category(findArticle.getCategory())
                             .status(findArticle.getStatus())
                             .location(findArticle.getLocation())
-//                            .fileName(fileNames)
-//                            .fileUrl(fileUrls)
+                            .fileName(fileNames)
+                            .fileUrl(fileUrls)
                             .createdAt(findArticle.getCreatedAt())
                             .updatedAt(findArticle.getUpdatedAt())
-//                            .like(likeCheck(article, userDetails.getUser()))
-                    .build()
+                            .like(likeCheck(findArticle, userDetails.getUser()))
+                            .build()
             );
-            
+
         }
 
         return new PageImpl<>(articleResponseDtoList, pageable, total.size());
     }
-//    public boolean likeCheck(QArticle article, User user) {
-//        return likeRepository.existsByUserAndArticle(user, article);
-//    }
+
+
+    public boolean likeCheck(Article article, User user) {
+        return likeRepository.existsByUserAndArticle(user, article);
+    }
 }
+
