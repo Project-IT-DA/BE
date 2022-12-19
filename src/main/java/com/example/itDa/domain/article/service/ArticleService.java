@@ -62,7 +62,6 @@ public class ArticleService {
         User user = userRepository.findByEmail(userDetails.getUser().getEmail()).orElseThrow(
                 () -> new RequestException(ErrorCode.USER_NOT_EXIST)
         );
-        System.out.println(userDetails.getUsername());
 
         Article article = Article.builder()
                 .user(user)
@@ -307,6 +306,11 @@ public class ArticleService {
         ) -> new RequestException(ErrorCode.ARTICLE_NOT_FOUND_404));
     }
 
+    User checkUser(Long userId){
+        return userRepository.findById(userId).orElseThrow((
+        )->new RequestException(ErrorCode.USER_NOT_EXIST));
+    }
+
     public String likeArticle(Long articleId, UserDetailsImpl userDetails) {
         User user = userDetails.getUser();
         Article article = getArticle(articleId);
@@ -332,6 +336,8 @@ public class ArticleService {
     }
 
     public List<ViewAllArticleResponseDto> searchArticle(String title, UserDetailsImpl userDetails) {
+
+        User user = checkUser(userDetails.getUser().getId());
 
         List<Article> articleList = articleRepository.findByArticleNameContaining(title);
         List<ViewAllArticleResponseDto> responseDtoList = new ArrayList<>();
@@ -361,7 +367,7 @@ public class ArticleService {
                         .fileUrl(fileUrls)
                         .createdAt(article.getCreatedAt())
                         .updatedAt(article.getUpdatedAt())
-                        .like(likeCheck(article, userDetails.getUser()))
+                        .like(likeCheck(article, user))
                         .build();
                 responseDtoList.add(viewAllArticleResponseDto);
 

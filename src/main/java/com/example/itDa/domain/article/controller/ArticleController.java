@@ -1,6 +1,7 @@
 package com.example.itDa.domain.article.controller;
 
 import com.example.itDa.domain.Category;
+import com.example.itDa.domain.article.repository.ArticleRepository;
 import com.example.itDa.domain.article.request.ArticleRequestDto;
 import com.example.itDa.domain.article.request.EditArticleRequestDto;
 import com.example.itDa.domain.article.response.ArticleResponseDto;
@@ -9,6 +10,9 @@ import com.example.itDa.domain.article.service.ArticleService;
 import com.example.itDa.infra.global.dto.ResponseDto;
 import com.example.itDa.infra.security.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,9 +22,13 @@ import java.util.List;
 @RestController
 public class ArticleController {
     private final ArticleService articleService;
+
+    private final ArticleRepository articleRepository;
+
     @Autowired
-    public ArticleController(ArticleService articleService) {
+    public ArticleController(ArticleService articleService,ArticleRepository articleRepository) {
         this.articleService = articleService;
+        this.articleRepository = articleRepository;
     }
 
     @PostMapping("api/articles")
@@ -62,4 +70,10 @@ public class ArticleController {
     public ResponseDto<List<ViewAllArticleResponseDto>> searchArticle(@RequestParam String title,@AuthenticationPrincipal UserDetailsImpl userDetails){
         return ResponseDto.success(articleService.searchArticle(title,userDetails));
     }
+
+    @GetMapping("api/articles2")
+    public ResponseDto<Page<ViewAllArticleResponseDto>>getViewAllArticle(@PageableDefault(size = 5) Pageable pageable, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return ResponseDto.success(articleRepository.getViewAllArticle(pageable, userDetails));
+    }
+
 }

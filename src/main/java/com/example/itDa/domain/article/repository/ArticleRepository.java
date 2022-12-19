@@ -10,7 +10,11 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
-public interface ArticleRepository extends JpaRepository<Article, Long> {
+
+
+
+public interface ArticleRepository extends JpaRepository<Article, Long>, ArticleRepositoryCustom {
+
     List<Article> findAllByOrderByCreatedAtDesc();
 
     List<Article> findByArticleNameContaining(String keyword);
