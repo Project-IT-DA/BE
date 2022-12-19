@@ -170,6 +170,7 @@ public class WebSecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         configuration.addAllowedOrigin("http://localhost:3000");
+        configuration.addAllowedOrigin("http://localhost:8080");
         configuration.addAllowedOrigin("https://it-da.shop");
         configuration.addAllowedOrigin("https://cheoljun.shop");
         configuration.addAllowedHeader("*");
