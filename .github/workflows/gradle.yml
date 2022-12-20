@@ -31,12 +31,12 @@ jobs:
         java-version: '11'
         distribution: 'temurin'
         
-    - name: make application.yml
-      run: |
-        cd ./src/main/resources
-        touch ./application.yml
-        echo "${{secrets.DEVELKIT_APPLICATION_YML}}" > ./application.yml
-      shell: bash
+#    - name: make application.yml
+#      run: |
+#        cd ./src/main/resources
+#        touch ./application.yml
+#        echo "${{secrets.IT_DA_YML}}" > ./application.yml
+#      shell: bash
 
     - name: Build with Gradle
       run: |
