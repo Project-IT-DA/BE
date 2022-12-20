@@ -58,7 +58,7 @@ public class WebSecurityConfig {
                 .ignoring()
                 .antMatchers(
                         "/swagger-ui/**",
-                        "/v2/api-docs",
+                        "/v3/api-docs",
                         "/webjars/**",
                         "/swagger-resources/**",
                         "/swagger/**",

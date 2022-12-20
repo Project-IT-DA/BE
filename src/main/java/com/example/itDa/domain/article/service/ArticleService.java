@@ -78,7 +78,7 @@ public class ArticleService {
 
         List<String> fileUrls;
         try {
-            fileUrls = s3UploaderService.uploadFormDataFiles(multipartFiles, "upload");
+            fileUrls = s3UploaderService.uploadFormDataFiles(multipartFiles, "article");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -230,13 +230,13 @@ public class ArticleService {
         // 삭제할 파일이 있는 경우 버킷에서 삭제
         // DB 에서도 삭제
         for (int i = 0; i < deleteFileUrls.size(); i++) {
-            s3UploaderService.deleteFiles(deleteFileUrls.get(i), "upload");
+            s3UploaderService.deleteFiles(deleteFileUrls.get(i), "article");
             articleFileRepository.deleteByFileUrl(deleteFileUrls.get(i));
         }
         // S3
         List<String> editFileUrls;
         try {
-            editFileUrls = s3UploaderService.uploadFormDataFiles(multipartFiles, "upload");
+            editFileUrls = s3UploaderService.uploadFormDataFiles(multipartFiles, "article");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -290,7 +290,7 @@ public class ArticleService {
         }
         // 빈배열에 담긴 Url 을 삭제해준다.
         for (int i = 0; i < articleFileUrls.size(); i++) {
-            s3UploaderService.deleteFiles(articleFileUrls.get(i), "upload");
+            s3UploaderService.deleteFiles(articleFileUrls.get(i), "article");
         }
         // articleFileDb 에서도 삭제
         // articleDB 에서도 article 삭제
