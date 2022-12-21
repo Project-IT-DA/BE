@@ -3,8 +3,6 @@ package com.example.itDa.domain.article.request;
 import com.example.itDa.domain.Category;
 import lombok.*;
 
-import java.util.List;
-
 @Getter
 @Setter
 @NoArgsConstructor

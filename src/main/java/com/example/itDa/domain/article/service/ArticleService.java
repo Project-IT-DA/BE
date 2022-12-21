@@ -76,7 +76,7 @@ public class ArticleService {
         articleRepository.save(article);
 
 
-        List<String> fileUrls;
+        List<String> fileUrls = new ArrayList<>();
         try {
             fileUrls = s3UploaderService.uploadFormDataFiles(multipartFiles, "article");
         } catch (IOException e) {
@@ -86,14 +86,16 @@ public class ArticleService {
         List<String> fileNames = new ArrayList<>();
 
         List<ArticleFile> articleFiles = new ArrayList<>();
-        for (int i = 0; i < fileUrls.size(); i++) {
+        if (fileUrls != null) {
+            for (int i = 0; i < fileUrls.size(); i++) {
 
-            fileNames.add(multipartFiles[i].getOriginalFilename());
-            articleFiles.add(ArticleFile.builder()
-                    .article(article)
-                    .fileUrl(fileUrls.get(i))
-                    .fileName(fileNames.get(i))
-                    .build());
+                fileNames.add(multipartFiles[i].getOriginalFilename());
+                articleFiles.add(ArticleFile.builder()
+                        .article(article)
+                        .fileUrl(fileUrls.get(i))
+                        .fileName(fileNames.get(i))
+                        .build());
+            }
         }
         articleFileRepository.saveAll(articleFiles);
         ArticleResponseDto articleResponseDto = ArticleResponseDto.builder()
