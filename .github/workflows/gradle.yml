@@ -38,6 +38,15 @@ jobs:
         echo "${{secrets.IT_DA_YML}}" > ./application.yml
       shell: bash
 
+    - name: Setup MySQL
+      uses: samin/mysql-action@v1
+      with:
+        character set server: 'utf8' 
+        mysql database: 'springboot_db' 
+        mysql user: 'admin'
+        mysql password: ${{ secrets.MYSQL_PASSWORD }}
+
+
     - name: Build with Gradle
       run: |
         chmod +x ./gradlew
