@@ -71,7 +71,6 @@ public class WebSecurityConfig {
 
     /*
      http security: cross site request forgery 사이트간 요청 위조 공격
-
      */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationManagerBuilder auth) throws Exception {
@@ -135,8 +134,7 @@ public class WebSecurityConfig {
         // 회원 관리 API SKIP 적용
         skipPathList.add("POST,/api/users/signup");
         skipPathList.add("POST,/api/users/email");
-        skipPathList.add("GET,/users/login/kakao/**");
-        skipPathList.add("GET,/users/login/google/**");
+        skipPathList.add("GET,/users/login/**");
 
 
 
