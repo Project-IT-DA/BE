@@ -22,4 +22,6 @@ public interface ArticleRepository extends JpaRepository<Article, Long>, Article
     List<Article> findByUser(User user);
 
     Long countByUser(User user);
+
+
 }
