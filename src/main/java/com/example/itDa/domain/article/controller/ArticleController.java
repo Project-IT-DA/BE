@@ -46,17 +46,17 @@ public class ArticleController {
 
     }
 
-
+    @ApiOperation(value = "거래글 전체 조회")
     @GetMapping("api/articles")
     public ResponseDto<?> viewAllArticle(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return articleService.viewAllArticle(userDetails);
     }
-
+    @ApiOperation(value = "거래글 단일 조회")
     @GetMapping("api/articles/{articleId}")
     public ResponseDto<?> viewArticle(@PathVariable Long articleId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return articleService.viewArticle(articleId, userDetails);
     }
-
+    @ApiOperation(value = "거래글 수정")
     @PutMapping("api/articles/{articleId}")
     public ResponseDto<?> editArticle(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long articleId,
                                       @RequestPart(value = "data") EditArticleRequestDto editRequestDto,
@@ -64,22 +64,22 @@ public class ArticleController {
         return articleService.editArticle(userDetails, articleId, editRequestDto, multipartFiles);
 
     }
-
+    @ApiOperation(value = "거래글 삭제")
     @DeleteMapping("api/articles/{articleId}")
     public ResponseDto<?> deleteArticle(@PathVariable Long articleId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return articleService.deleteArticle(userDetails, articleId);
     }
-
+    @ApiOperation(value = "거래글 찜 하기/취소")
     @PostMapping("api/articles/{articleId}/like")
     public ResponseDto<?> likeArticle(@PathVariable Long articleId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return ResponseDto.success(articleService.likeArticle(articleId, userDetails));
     }
-
+    @ApiOperation(value = "거래글 검색", notes = "제목으로 검색 가능합니다,")
     @GetMapping("api/articles/search")
     public ResponseDto<List<ViewAllArticleResponseDto>> searchArticle(@RequestParam String title, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return ResponseDto.success(articleService.searchArticle(title, userDetails));
     }
-
+    @ApiOperation(value = "거래글 전체 조회 무한 스크롤")
     @GetMapping("api/articles2")
     public ResponseDto<Page<ViewAllArticleResponseDto>> getViewAllArticle(@PageableDefault(size = 5) Pageable pageable, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return ResponseDto.success(articleRepository.getViewAllArticle(pageable, userDetails));
