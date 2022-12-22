@@ -84,5 +84,10 @@ public class ArticleController {
     public ResponseDto<Page<ViewAllArticleResponseDto>> getViewAllArticle(@PageableDefault(size = 5) Pageable pageable, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return ResponseDto.success(articleRepository.getViewAllArticle(pageable, userDetails));
     }
+    @ApiOperation(value = "거래 완료 체크")
+    @PostMapping("api/articles/{articleId}/sell")
+    public ResponseDto<?> soldOutArticle(@PathVariable Long articleId,@AuthenticationPrincipal UserDetailsImpl userDetails){
+        return ResponseDto.success(articleService.soldOutArticle(articleId,userDetails));
+    }
 
 }

@@ -377,6 +377,27 @@ public class ArticleService {
             }
             return responseDtoList;
         }
+
+    public ResponseDto<?> soldOutArticle(Long articleId, UserDetailsImpl userDetails) {
+        Article article = getArticle(articleId);
+
+        User user = userRepository.findByEmail(userDetails.getUser().getEmail()).orElseThrow(
+                () -> new RequestException(ErrorCode.NO_PERMISSION_TO_WRITE_NOTICE_400)
+        );
+        if (!user.equals(article.getUser())) {
+            throw new RequestException(ErrorCode.NO_PERMISSION_TO_MODIFY_NOTICE_400);
+        }
+        if(article.getStatus()==Status.SELL){
+            article.updateStatus(Status.SOLD_OUT);
+            articleRepository.save(article);
+            return ResponseDto.success("판매완료 상태로 변경 되었습니다.");
+        }else{
+            article.updateStatus(Status.SELL);
+            articleRepository.save(article);
+            return ResponseDto.success("판매가능 상태로 변경 되었습니다.");
+        }
+
     }
+}
 
 

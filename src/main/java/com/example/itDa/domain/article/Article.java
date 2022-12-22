@@ -63,4 +63,8 @@ public class Article extends TimeStamped {
         this.category = editRequestDto.getCategory();
         this.sellPrice = editRequestDto.getSellPrice();
     }
+
+    public void updateStatus(Status status) {
+        this.status = status;
+    }
 }
