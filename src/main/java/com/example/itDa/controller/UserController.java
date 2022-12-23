@@ -32,4 +32,11 @@ public class UserController {
         return userService.updateUserProfile(userDetails, multipartFile, updateProfileDto);
     }
 
+    // 거래글 찜목록 가져오기
+
+    // 커뮤니티 내가 쓴 게시글 가져오기
+
+    // 커뮤니티 내가 쓴 댓글 가져오기
+
+    // 회원탈퇴
 }

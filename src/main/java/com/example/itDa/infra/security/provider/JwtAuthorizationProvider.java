@@ -7,6 +7,7 @@ import com.example.itDa.domain.repository.UserRepository;
 import com.example.itDa.infra.security.UserDetailsImpl;
 import com.example.itDa.infra.security.jwt.JwtDecoder;
 import com.example.itDa.infra.security.jwt.UserInfo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -16,6 +17,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
 
 @Component
+@Slf4j
 
 public class JwtAuthorizationProvider implements AuthenticationProvider {
     private final JwtDecoder jwtDecoder;
@@ -33,6 +35,8 @@ public class JwtAuthorizationProvider implements AuthenticationProvider {
 
         String token = (String) authentication.getPrincipal();
         UserInfo userInfo = jwtDecoder.decodeUsername(token);
+
+        log.info("decodedUsername: " + jwtDecoder.decodeUsername(token));
 
         User user = userRepository.findByEmail(userInfo.getEmail())
                 .orElseThrow(()->new AuthenticationCredentialsNotFoundException("해당 회원정보가 없습니다."));

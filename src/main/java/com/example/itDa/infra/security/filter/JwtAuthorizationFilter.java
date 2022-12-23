@@ -37,7 +37,9 @@ public class JwtAuthorizationFilter extends AbstractAuthenticationProcessingFilt
 
         // JWT 값을 담아주는 변수 TokenPayload
         String tokenPayload = request.getHeader("Authorization");
+
         log.info("token payload : "+tokenPayload);
+
         if (tokenPayload == null || tokenPayload.equals("")) {
             throw new AuthenticationCredentialsNotFoundException("토큰이 존재하지 않습니다");
         }
