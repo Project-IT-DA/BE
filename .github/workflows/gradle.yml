@@ -55,7 +55,7 @@ jobs:
     - name: Build with Gradle
       run: |
         chmod +x ./gradlew
-        ./gradlew build
+        ./gradlew build -x test
         
      #(4) aws 인증
     - name: Configure AWS credentials
