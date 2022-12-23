@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-REPOSITORY=/home/ubuntu/magazine
+REPOSITORY=/home/ubuntu
 cd $REPOSITORY
 
-APP_NAME=cicd-test
+APP_NAME=BE[demo]
 JAR_NAME=$(ls $REPOSITORY/build/libs/ | grep 'SNAPSHOT.jar' | tail -n 1)
 JAR_PATH=$REPOSITORY/build/libs/$JAR_NAME
 
