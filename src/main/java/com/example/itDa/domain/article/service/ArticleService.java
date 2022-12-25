@@ -112,7 +112,6 @@ public class ArticleService {
                 .fileName(fileNames)
                 .fileUrl(fileUrls)
                 .build();
-        System.out.println(article.getCreatedAt());
         return ResponseDto.success(articleResponseDto);
     }
 
