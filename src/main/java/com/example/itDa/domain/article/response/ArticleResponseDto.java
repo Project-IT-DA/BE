@@ -26,8 +26,8 @@ public class ArticleResponseDto {
     private Category category;
     private Status status;
     private String location;
-    private String createdAt;
-    private String updatedAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
     private int sellPrice;
     private List<String> fileName;
     private List<String> fileUrl;
