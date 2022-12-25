@@ -21,7 +21,7 @@ public class EditArticleResponseDto {
     private Category category;
     private Status status;
     private String location;
-    private LocalDateTime updatedAt;
+    private String updatedAt;
     private int sellPrice;
     private List<String> fileName;
     private List<String> fileUrl;
