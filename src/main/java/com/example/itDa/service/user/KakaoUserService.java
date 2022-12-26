@@ -76,39 +76,6 @@ public class KakaoUserService {
 
     }
 
-    private void kakaoLoginAccess(User kakaoUser, HttpServletResponse response) {
-
-        UserDetailsImpl userDetails = new UserDetailsImpl(kakaoUser);
-        String token = JwtTokenUtils.generateJwtToken(userDetails);
-        response.addHeader(AUTH_HEADER, TOKEN_TYPE + " " + token);
-
-    }
-
-    private User registerKakaoUser(KakaoSocialDto kakaoSocialDto) {
-
-        // User 정보있는지 확인
-        User kakaoUser = userRepository.findByEmail(kakaoSocialDto.getEmail()).orElse(null);
-
-        // User 정보가 없으면 회원가입 시키기
-        if (kakaoUser == null) {
-            String password = UUID.randomUUID().toString();
-
-            kakaoUser = User.builder()
-                    .socialId(kakaoSocialDto.getKakaoId().toString())
-                    .username(kakaoSocialDto.getUsername())
-                    .password(encoder.encode(password))
-                    .email(kakaoSocialDto.getEmail())
-                    .social(UserSocialEnum.KAKAO)
-                    .profileImg(kakaoSocialDto.getProfileImg())
-                    .build();
-
-            userRepository.save(kakaoUser);
-        }
-
-        return kakaoUser;
-
-    }
-
     private String getAccessToken(String code) throws JsonProcessingException {
 
         // HTTP Header 생성
@@ -186,6 +153,39 @@ public class KakaoUserService {
                 .username(username)
                 .profileImg(profileImg)
                 .build();
+    }
+
+    private User registerKakaoUser(KakaoSocialDto kakaoSocialDto) {
+
+        // User 정보있는지 확인
+        User kakaoUser = userRepository.findByEmail(kakaoSocialDto.getEmail()).orElse(null);
+
+        // User 정보가 없으면 회원가입 시키기
+        if (kakaoUser == null) {
+            String password = UUID.randomUUID().toString();
+
+            kakaoUser = User.builder()
+                    .socialId(kakaoSocialDto.getKakaoId().toString())
+                    .username(kakaoSocialDto.getUsername())
+                    .password(encoder.encode(password))
+                    .email(kakaoSocialDto.getEmail())
+                    .social(UserSocialEnum.KAKAO)
+                    .profileImg(kakaoSocialDto.getProfileImg())
+                    .build();
+
+            userRepository.save(kakaoUser);
+        }
+
+        return kakaoUser;
+
+    }
+
+    private void kakaoLoginAccess(User kakaoUser, HttpServletResponse response) {
+
+        UserDetailsImpl userDetails = new UserDetailsImpl(kakaoUser);
+        String token = JwtTokenUtils.generateJwtToken(userDetails);
+        response.addHeader(AUTH_HEADER, TOKEN_TYPE + " " + token);
+
     }
 
 
