@@ -51,7 +51,7 @@ jobs:
       run: |
         cd ./src/main/resources
         touch ./application.yml
-        echo "${{secrets.DEVELKIT_APPLICATION_YML}}" > ./application.yml
+        echo "${{secrets.IT_DA_YML}}" > ./application.yml
       shell: bash
 
     - name: Build with Gradle
