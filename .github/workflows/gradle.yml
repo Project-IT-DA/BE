@@ -56,7 +56,7 @@ jobs:
     - name: Build with Gradle
       run: |
         chmod +x ./gradlew
-        ./gradlew build
+        ./gradlew build --exclude-task test
         
       #(3)jar 파일
     - name : Make Directory & copy jar
