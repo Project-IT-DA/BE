@@ -20,6 +20,7 @@ import com.example.itDa.infra.global.exception.ErrorCode;
 import com.example.itDa.infra.global.exception.RequestException;
 import com.example.itDa.infra.s3.S3UploaderService;
 import com.example.itDa.infra.security.UserDetailsImpl;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +32,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class ArticleService {
     private final ArticleRepository articleRepository;
     private final UserRepository userRepository;
@@ -97,6 +99,7 @@ public class ArticleService {
                         .build());
             }
         }
+
         articleFileRepository.saveAll(articleFiles);
         ArticleResponseDto articleResponseDto = ArticleResponseDto.builder()
                 .userId(user.getId())
@@ -168,6 +171,7 @@ public class ArticleService {
 
         ArticleResponseDto articleResponseDto = ArticleResponseDto.builder()
                 .userId(article.getUser().getId())
+                .profileImg(article.getUser().getProfileImg())
                 .username(article.getUser().getUsername())
                 .density(article.getUser().getDensity())
                 .articleId(article.getId())
@@ -242,11 +246,10 @@ public class ArticleService {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        if (null != multipartFiles) {
+        if (null != multipartFiles && multipartFiles[0].getOriginalFilename().equals("") == false ) {
             for (int i = 0; i < multipartFiles.length; i++) {
                 fileNames.add(multipartFiles[i].getOriginalFilename());
                 fileUrls.add(editFileUrls.get(i));
-
                 editFiles.add(ArticleFile.builder()
                         .fileName(multipartFiles[i].getOriginalFilename())
                         .fileUrl(editFileUrls.get(i))

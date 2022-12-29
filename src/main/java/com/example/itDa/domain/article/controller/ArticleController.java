@@ -57,10 +57,10 @@ public class ArticleController {
         return articleService.viewArticle(articleId, userDetails);
     }
     @ApiOperation(value = "거래글 수정")
-    @PutMapping("api/articles/{articleId}")
+    @PatchMapping("api/articles/{articleId}")
     public ResponseDto<?> editArticle(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long articleId,
                                       @RequestPart(value = "data") EditArticleRequestDto editRequestDto,
-                                      @RequestPart(value = "file") MultipartFile[] multipartFiles) {
+                                      @RequestPart(value = "file", required = false) MultipartFile[] multipartFiles) {
         return articleService.editArticle(userDetails, articleId, editRequestDto, multipartFiles);
 
     }

@@ -21,6 +21,7 @@ import java.util.List;
 public class ArticleResponseDto {
     private Long userId;
     private String username;
+    private String profileImg;
     private int density;
     private Long articleId;
     private String articleName;
