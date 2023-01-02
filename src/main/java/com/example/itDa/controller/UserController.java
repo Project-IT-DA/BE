@@ -5,6 +5,7 @@ import com.example.itDa.dto.response.ProfileResponseDto;
 import com.example.itDa.infra.global.dto.ResponseDto;
 import com.example.itDa.infra.security.UserDetailsImpl;
 import com.example.itDa.service.user.UserService;
+import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +16,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @RequiredArgsConstructor
-@Controller
+@RestController
+@Api(tags = "USER")
 public class UserController {
     private final UserService userService;
 
