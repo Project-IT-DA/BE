@@ -1,5 +1,6 @@
 package com.example.itDa.domain.article.service;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
@@ -13,7 +14,10 @@ import java.nio.charset.Charset;
 @Service
 public class MapService {
     private static String GEOCODE_URL = "http://dapi.kakao.com/v2/local/search/address.json?query=";
-    private static String GEOCODE_USER_INFO = "KakaoAK Rest api key키";
+    @Value("${kakao.map.rest-api}")
+    private static String GEOCODE_USER_INFO;
+
+    private String location;
 
     public void mapSearch() {
 
@@ -22,7 +26,7 @@ public class MapService {
 
         try {
             // 인코딩한 String을 보내줘야 원하는 데이터를 받을 수 있다.
-            String address = URLEncoder.encode("대구광역시 중구 동성로2가 동성로2길 81", "UTF-8");
+            String address = URLEncoder.encode(location, "UTF-8");
             // URL 객채 생성 부분
             obj = new URL(GEOCODE_URL + address);
 
