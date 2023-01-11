@@ -1,4 +1,4 @@
-package com.example.itDa.domain.article.config;
+package com.example.itDa.infra.swagger;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,6 +1,5 @@
-package com.example.itDa.domain.article;
+package com.example.itDa.domain.model;
 
-import com.example.itDa.domain.model.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

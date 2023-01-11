@@ -1,6 +1,6 @@
 package com.example.itDa.service.user;
 
-import com.example.itDa.domain.article.repository.ArticleRepository;
+import com.example.itDa.domain.repository.ArticleRepository;
 import com.example.itDa.domain.model.User;
 import com.example.itDa.domain.repository.CommunityRepository;
 import com.example.itDa.domain.repository.UserRepository;
@@ -13,7 +13,6 @@ import com.example.itDa.infra.s3.S3UploaderService;
 import com.example.itDa.infra.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,7 +29,7 @@ public class UserService {
     private final CommunityRepository communityRepository;
     private final S3UploaderService s3UploaderService;
 
-    public ResponseDto<ProfileResponseDto> getUserProfile(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseDto<ProfileResponseDto> getUserProfile(UserDetailsImpl userDetails) {
         return ResponseDto.success(ProfileResponseDto.of(userDetails, articleRepository, communityRepository));
     }
 
@@ -55,4 +54,10 @@ public class UserService {
                 .orElseThrow(() -> new RequestException(ErrorCode.USER_NOT_EXIST));
     }
 
+    @Transactional
+    public ResponseDto<String> signOut(User user) {
+            userRepository.delete(user);
+            log.info("나와 :" );
+        return ResponseDto.success("회원탈퇴 성공");
+    }
 }

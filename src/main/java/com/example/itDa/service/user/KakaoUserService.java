@@ -190,26 +190,26 @@ public class KakaoUserService {
 
 
     //카카오 회원일 경우, application 연결 끊기 과정 진행
-    public void signOutKakaoUser(User user) {
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", "KakaoAK " + APP_ADMIN_KEY);
-        headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
-
-        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-        body.add("target_id_type", "user_id");
-        body.add("target_id", user.getSocialId().toString());
-
-        HttpEntity<MultiValueMap<String, String>> kakaoUserInfoRequest = new HttpEntity<>(body, headers);
-        RestTemplate rt = new RestTemplate();
-
-        ResponseEntity<String> response = rt.exchange(
-                "https://kapi.kakao.com/v1/user/unlink",
-                HttpMethod.POST,
-                kakaoUserInfoRequest,
-                String.class
-        );
-        log.info("회원탈퇴 한 유저의 kakaoId : {}", response.getBody());
-    }
+//    public void signOutKakaoUser(User user) {
+//
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.add("Authorization", "KakaoAK " + APP_ADMIN_KEY);
+//        headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
+//
+//        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
+//        body.add("target_id_type", "user_id");
+//        body.add("target_id", user.getSocialId().toString());
+//
+//        HttpEntity<MultiValueMap<String, String>> kakaoUserInfoRequest = new HttpEntity<>(body, headers);
+//        RestTemplate rt = new RestTemplate();
+//
+//        ResponseEntity<String> response = rt.exchange(
+//                "https://kapi.kakao.com/v1/user/unlink",
+//                HttpMethod.POST,
+//                kakaoUserInfoRequest,
+//                String.class
+//        );
+//        log.info("회원탈퇴 한 유저의 kakaoId : {}", response.getBody());
+//    }
 
 }

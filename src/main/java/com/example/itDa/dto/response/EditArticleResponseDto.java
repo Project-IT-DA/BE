@@ -1,4 +1,4 @@
-package com.example.itDa.domain.article.response;
+package com.example.itDa.dto.response;
 
 import com.example.itDa.domain.Category;
 import com.example.itDa.domain.Status;
@@ -12,21 +12,17 @@ import java.util.List;
 
 @Getter
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
-public class ViewAllArticleResponseDto {
-
+@NoArgsConstructor
+public class EditArticleResponseDto {
     private Long articleId;
-    private Long userId;
-    private String username;
     private String articleName;
+    private String substance;
     private Category category;
     private Status status;
     private String location;
-    private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private int sellPrice;
     private List<String> fileName;
     private List<String> fileUrl;
-    private boolean like;
 }

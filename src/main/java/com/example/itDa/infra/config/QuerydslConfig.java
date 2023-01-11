@@ -1,4 +1,4 @@
-package com.example.itDa.domain.article.config;
+package com.example.itDa.infra.config;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.context.annotation.Bean;

@@ -1,6 +1,5 @@
-package com.example.itDa.domain.article;
+package com.example.itDa.domain.model;
 
-import com.example.itDa.domain.model.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -16,11 +15,11 @@ public class Like {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ARTICLE_ID")
+    @JoinColumn(name = "article_id")
     private Article article;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "USER_ID")
+    @JoinColumn(name = "user_id")
     private User user;
 
     public Like(Article article, User user) {

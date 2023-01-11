@@ -1,12 +1,11 @@
-package com.example.itDa.domain.article.controller;
+package com.example.itDa.controller;
 
-import com.example.itDa.domain.Category;
-import com.example.itDa.domain.article.repository.ArticleRepository;
-import com.example.itDa.domain.article.request.ArticleRequestDto;
-import com.example.itDa.domain.article.request.EditArticleRequestDto;
-import com.example.itDa.domain.article.response.ArticleResponseDto;
-import com.example.itDa.domain.article.response.ViewAllArticleResponseDto;
-import com.example.itDa.domain.article.service.ArticleService;
+import com.example.itDa.domain.repository.ArticleRepository;
+import com.example.itDa.dto.request.ArticleRequestDto;
+import com.example.itDa.dto.request.EditArticleRequestDto;
+import com.example.itDa.dto.response.ArticleResponseDto;
+import com.example.itDa.dto.response.ViewAllArticleResponseDto;
+import com.example.itDa.service.ArticleService;
 import com.example.itDa.infra.global.dto.ResponseDto;
 import com.example.itDa.infra.security.UserDetailsImpl;
 import io.swagger.annotations.Api;

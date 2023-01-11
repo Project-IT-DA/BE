@@ -64,7 +64,8 @@ public class WebSecurityConfig {
                         "/swagger/**",
                         "/h2-console/**",
                         "/stomp/chat/**",
-                        "/actuator/**"
+                        "/actuator/**",
+                        "/error/**"
         );
 
     }
@@ -147,6 +148,7 @@ public class WebSecurityConfig {
         skipPathList.add("GET,/");
         skipPathList.add("GET,/favicon.ico");
         skipPathList.add("GET,/error");
+        skipPathList.add("DELETE,/error");
 
         FilterSkipMatcher matcher = new FilterSkipMatcher(skipPathList, "/**");
         JwtAuthorizationFilter filter = new JwtAuthorizationFilter(headerTokenExtractor, matcher);

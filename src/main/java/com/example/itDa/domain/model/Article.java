@@ -1,12 +1,13 @@
-package com.example.itDa.domain.article;
+package com.example.itDa.domain.model;
 
 import com.example.itDa.domain.Category;
 import com.example.itDa.domain.Status;
 import com.example.itDa.domain.TimeStamped;
-import com.example.itDa.domain.article.request.EditArticleRequestDto;
-import com.example.itDa.domain.model.User;
+import com.example.itDa.dto.request.EditArticleRequestDto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -47,12 +48,9 @@ public class Article extends TimeStamped {
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
-
-    @OneToMany(mappedBy = "article", fetch = FetchType.LAZY, cascade = CascadeType.ALL,orphanRemoval = true)
-    @JsonIgnore
-    private List<Like> likeList = new ArrayList<>();
 
 
 

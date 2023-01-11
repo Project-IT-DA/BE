@@ -1,9 +1,7 @@
-package com.example.itDa.domain.article.response;
+package com.example.itDa.dto.response;
 
 import com.example.itDa.domain.Category;
 import com.example.itDa.domain.Status;
-import com.example.itDa.domain.article.Article;
-import com.example.itDa.domain.article.ArticleFile;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,13 +14,12 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ArticleResponseDto {
+public class ViewAllArticleResponseDto {
+
+    private Long articleId;
     private Long userId;
     private String username;
-    private int density;
-    private Long articleId;
     private String articleName;
-    private String substance;
     private Category category;
     private Status status;
     private String location;
@@ -32,6 +29,4 @@ public class ArticleResponseDto {
     private List<String> fileName;
     private List<String> fileUrl;
     private boolean like;
-
-
 }

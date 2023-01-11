@@ -39,4 +39,9 @@ public class UserController {
     // 커뮤니티 내가 쓴 댓글 가져오기
 
     // 회원탈퇴
+    @DeleteMapping("/api/users/signout")
+    public ResponseDto<String> signOut(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return userService.signOut(userDetails.getUser());
+    }
 }
+
