@@ -7,15 +7,13 @@ import com.example.itDa.infra.security.UserDetailsImpl;
 import com.example.itDa.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @RequiredArgsConstructor
-@Controller
+@RestController
 public class UserController {
     private final UserService userService;
 
