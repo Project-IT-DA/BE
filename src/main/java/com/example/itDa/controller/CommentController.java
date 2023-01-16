@@ -4,6 +4,7 @@ import com.example.itDa.dto.request.CommentRequestDto;
 import com.example.itDa.infra.global.dto.ResponseDto;
 import com.example.itDa.infra.security.UserDetailsImpl;
 import com.example.itDa.service.CommentService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -11,7 +12,8 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1")
+@RequestMapping("/api")
+@Api(tags = "COMMENT")
 public class CommentController {
 
     private final CommentService commentService;
