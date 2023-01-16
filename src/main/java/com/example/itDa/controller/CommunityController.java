@@ -4,6 +4,7 @@ import com.example.itDa.dto.request.CommunityRequestDto;
 import com.example.itDa.infra.global.dto.ResponseDto;
 import com.example.itDa.infra.security.UserDetailsImpl;
 import com.example.itDa.service.CommunityService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -11,8 +12,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api")
 @RequiredArgsConstructor
+@Api(tags = "COMMUNITY")
 public class CommunityController {
 
     private final CommunityService communityService;

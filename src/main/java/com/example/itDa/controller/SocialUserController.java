@@ -4,6 +4,7 @@ import com.example.itDa.dto.response.LoginDto;
 import com.example.itDa.infra.global.dto.ResponseDto;
 import com.example.itDa.service.user.GoogleUserService;
 import com.example.itDa.service.user.KakaoUserService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +16,7 @@ import java.io.IOException;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
+@Api(tags = "Login")
 public class SocialUserController {
 
     private final GoogleUserService googleUserService;
