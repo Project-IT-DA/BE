@@ -14,7 +14,7 @@ import javax.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.example.itDa.domain.article.QArticle.article;
+import static com.example.itDa.domain.model.article.QArticle.article;
 
 
 public class ArticleRepositoryCustomImpl implements ArticleRepositoryCustom {
