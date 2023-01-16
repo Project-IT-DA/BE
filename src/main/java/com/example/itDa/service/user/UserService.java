@@ -1,6 +1,6 @@
 package com.example.itDa.service.user;
 
-import com.example.itDa.domain.article.repository.ArticleRepository;
+import com.example.itDa.domain.repository.ArticleRepository;
 import com.example.itDa.domain.model.User;
 import com.example.itDa.domain.repository.CommunityRepository;
 import com.example.itDa.domain.repository.UserRepository;
@@ -55,4 +55,9 @@ public class UserService {
                 .orElseThrow(() -> new RequestException(ErrorCode.USER_NOT_EXIST));
     }
 
+    public ResponseDto<String> signout(UserDetailsImpl userDetails) {
+        checkId(userDetails.getUser().getId());
+        userRepository.delete(userDetails.getUser());
+        return ResponseDto.success("삭제되었습니다.");
+    }
 }

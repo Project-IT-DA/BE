@@ -15,7 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @RequiredArgsConstructor
-@Controller
+@RestController
 public class UserController {
     private final UserService userService;
 
@@ -30,6 +30,11 @@ public class UserController {
                                                              @RequestPart(value = "file", required = false)MultipartFile multipartFile,
                                                              @RequestPart(value = "data")UpdateProfileDto updateProfileDto) {
         return userService.updateUserProfile(userDetails, multipartFile, updateProfileDto);
+    }
+
+    @DeleteMapping("/api/users/signout")
+    public ResponseDto<String> signout(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return userService.signout(userDetails);
     }
 
 }

@@ -1,7 +1,7 @@
 package com.example.itDa.dto.response;
 
-import com.example.itDa.domain.article.Article;
-import com.example.itDa.domain.article.repository.ArticleRepository;
+import com.example.itDa.domain.model.article.Article;
+import com.example.itDa.domain.repository.ArticleRepository;
 import com.example.itDa.domain.model.Community;
 import com.example.itDa.domain.repository.CommunityRepository;
 import com.example.itDa.infra.security.UserDetailsImpl;

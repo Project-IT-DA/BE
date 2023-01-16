@@ -1,12 +1,10 @@
-package com.example.itDa.domain.article.repository;
+package com.example.itDa.domain.repository;
 
-import com.example.itDa.domain.article.Article;
-import com.example.itDa.domain.article.Like;
-import com.example.itDa.domain.article.QArticle;
+import com.example.itDa.domain.model.article.Article;
+import com.example.itDa.domain.model.article.Like;
 import com.example.itDa.domain.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface LikeRepository extends JpaRepository<Like,Long> {
