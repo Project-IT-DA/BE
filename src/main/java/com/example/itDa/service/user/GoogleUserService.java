@@ -168,7 +168,8 @@ public class GoogleUserService {
         JsonNode jsonNode = objectMapper
                 .readTree(responseBody);
 
-        String googleId = jsonNode.get("id").asText();
+        String googleId = jsonNode
+                .get("id").asText();
 
         String username = jsonNode
                 .get("name").asText();
