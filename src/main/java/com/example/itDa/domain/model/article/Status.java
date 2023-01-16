@@ -1,4 +1,4 @@
-package com.example.itDa.domain;
+package com.example.itDa.domain.model.article;
 
 public enum Status {
     SELL("거래가능"),

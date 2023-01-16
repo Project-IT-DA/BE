@@ -1,7 +1,6 @@
-package com.example.itDa.domain.article.request;
+package com.example.itDa.dto.request;
 
-import com.example.itDa.domain.Category;
-import lombok.Builder;
+import com.example.itDa.domain.model.article.Category;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

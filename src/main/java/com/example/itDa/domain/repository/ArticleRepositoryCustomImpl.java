@@ -1,13 +1,11 @@
-package com.example.itDa.domain.article.repository;
+package com.example.itDa.domain.repository;
 
-import com.example.itDa.domain.article.Article;
-import com.example.itDa.domain.article.ArticleFile;
-import com.example.itDa.domain.article.response.ViewAllArticleResponseDto;
+import com.example.itDa.domain.model.article.Article;
+import com.example.itDa.domain.model.article.ArticleFile;
+import com.example.itDa.dto.response.ViewAllArticleResponseDto;
 import com.example.itDa.domain.model.User;
-import com.example.itDa.domain.repository.ArticleFileRepository;
 import com.example.itDa.infra.security.UserDetailsImpl;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;

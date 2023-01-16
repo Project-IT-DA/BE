@@ -1,9 +1,9 @@
-package com.example.itDa.domain.article;
+package com.example.itDa.domain.model.article;
 
-import com.example.itDa.domain.Category;
-import com.example.itDa.domain.Status;
+import com.example.itDa.domain.model.article.Category;
+import com.example.itDa.domain.model.article.Status;
 import com.example.itDa.domain.TimeStamped;
-import com.example.itDa.domain.article.request.EditArticleRequestDto;
+import com.example.itDa.dto.request.EditArticleRequestDto;
 import com.example.itDa.domain.model.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;

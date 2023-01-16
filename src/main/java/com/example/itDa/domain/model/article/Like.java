@@ -1,4 +1,4 @@
-package com.example.itDa.domain.article;
+package com.example.itDa.domain.model.article;
 
 import com.example.itDa.domain.model.User;
 import lombok.Getter;

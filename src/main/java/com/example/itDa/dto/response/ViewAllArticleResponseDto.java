@@ -1,7 +1,7 @@
-package com.example.itDa.domain.article.response;
+package com.example.itDa.dto.response;
 
-import com.example.itDa.domain.Category;
-import com.example.itDa.domain.Status;
+import com.example.itDa.domain.model.article.Category;
+import com.example.itDa.domain.model.article.Status;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
